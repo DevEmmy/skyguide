@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import NavBar from "@/components/NavBar";
 import { useState } from "react";
 import Overview from "@/components/Weather/Overview";
+import GeoLocator from "@/components/GeoLocation";
 
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
@@ -33,8 +34,12 @@ function Home() {
         </div>
       </div>
 
+      <GeoLocator />
+
       <LocationSearch search={search} handleSearch={handleSearch} />
-      <Overview locationData={search}/>
+      <div className="mt-10">
+        <Overview locationData={search}/>
+      </div>
       <LazyMap region={search} />
       {/* <APIsSourceToggle /> */}
     </main>

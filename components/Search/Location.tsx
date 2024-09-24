@@ -8,9 +8,9 @@ const LocationSearch = ({search, handleSearch}: any) => {
 
   return (
     <div className="section flex flex-col gap-2 place-items-center justify-center -mt-20 border-xl">
-      <div className=' border md:w-3/5 bg-white rounded-xl'>
+      {/* <div className=' border md:w-3/5 bg-white rounded-xl'> */}
       <div className=' border md:2/3 bg-white rounded-xl'>
-        <Overview locationData={location}/>
+        <Overview locationData={search}/>
         <div className='flex justify-between  py-2 px-3 rounded-xl border m-2'>
           <input
             type="search"
