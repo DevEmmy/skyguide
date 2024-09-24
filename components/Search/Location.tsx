@@ -4,13 +4,7 @@ import { RiSearch2Line, RiUserLocationLine } from 'react-icons/ri';
 import Overview from '../Weather/Overview';
 
 
-const LocationSearch = () => {
-  const [location, setLocation] = useState('nigeria');
-  const [autoDetect, setAutoDetect] = useState(false);
-
-    const handleAutoDetectClick = () => {
-        
-    }
+const LocationSearch = ({search, handleSearch}: any) => {
 
   return (
     <div className="section flex flex-col gap-2 place-items-center justify-center -mt-20 border-xl">
@@ -18,13 +12,13 @@ const LocationSearch = () => {
         <div className='flex justify-between  py-2 px-3 rounded-xl border m-2'>
           <input
             type="search"
-            value={location}
-            onChange={(e: ChangeEvent<HTMLInputElement>) => setLocation(e.target.value) }
+            value={search}
+            onChange={handleSearch }
             placeholder="Search for location"
             className="w-full px-4 py-2 text-gray-700 outline-0 grow"
           />
           <button
-            onClick={handleAutoDetectClick}
+            // onClick={handleAutoDetectClick}
             className="bgblue-500 bg-gray-600 hover:bg-gray-700 text-white font-bold py-1 px-3 rounded">
             <RiSearch2Line />
           </button>
