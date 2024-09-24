@@ -1,3 +1,18 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+    @apply bg-[#F7F7F7]
+}
+
+.bg-sky {
+    background: url('../public/bg.jpg');
+    background-repeat: no-repeat;
+    background-position: top;
+    background-size: cover;
+}
+
+.section {
+    @apply px-5 md:px-16
+}
