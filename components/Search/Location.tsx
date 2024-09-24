@@ -5,7 +5,7 @@ import Overview from '../Weather/Overview';
 
 
 const LocationSearch = () => {
-  const [location, setLocation] = useState('');
+  const [location, setLocation] = useState('nigeria');
   const [autoDetect, setAutoDetect] = useState(false);
 
     const handleAutoDetectClick = () => {
@@ -15,10 +15,9 @@ const LocationSearch = () => {
   return (
     <div className="section flex flex-col gap-2 place-items-center justify-center -mt-20 border-xl">
       <div className=' border md:w-3/5 bg-white rounded-xl'>
-        {/* <Overview /> */}
         <div className='flex justify-between  py-2 px-3 rounded-xl border m-2'>
           <input
-            type="text"
+            type="search"
             value={location}
             onChange={(e: ChangeEvent<HTMLInputElement>) => setLocation(e.target.value) }
             placeholder="Search for location"

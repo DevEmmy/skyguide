@@ -1,8 +1,3 @@
-import Image from "next/image";
-import NavBar from "@/components/NavBar";
-// import LocationSearch from "@/components/Search/Location";
-// import Overview from "@/components/Weather/Overview";
-import APIsSourceToggle from "@/components/APIsSourceToggle";
 import LocationSearch from "@/components/Search/Location";
 
 import dynamic from "next/dynamic";
@@ -12,7 +7,15 @@ const LazyMap = dynamic(() => import("@/components/Weather/Overview"), {
   loading: () => <p>Loading...</p>,
 });
 
-export default function Home() {
+import dynamic from "next/dynamic";
+import NavBar from "@/components/NavBar";
+
+const LazyMap = dynamic(() => import("@/components/Weather/Overview"), {
+  ssr: false,
+  loading: () => <p>Loading...</p>,
+});
+
+function Home() {
   return (
     <main>
       <div className="bg-sky h-[70vh]">
@@ -32,3 +35,6 @@ export default function Home() {
     </main>
   );
 }
+
+
+export default Home
