@@ -57,7 +57,7 @@ const Overview = ({locationData} : any) => {
           <li className='px-1.5'>Temperature: {weatherData.temperature}°C</li>
           <li className='px-1.5'>Wind Speed: {weatherData.windSpeed} km/h</li>
           <li className='px-1.5'>Wind Direction: {weatherData.windDirection}</li>
-          <li className='px-1.5 flex items-center'> <img src={weatherData?.rainChances.icon} className='size-5 md:size-10' /> {weatherData.rainChances?.text}</li>
+          <li className='px-1.5 flex items-center gap-1'> <img src={weatherData?.rainChances.icon} className='size-5 md:size-8' /> {weatherData.rainChances?.text}</li>
         </ul>
       )}
     </div>
