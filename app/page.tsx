@@ -4,10 +4,13 @@ import NavBar from "@/components/NavBar";
 import Overview from "@/components/Weather/Overview";
 import APIsSourceToggle from "@/components/APIsSourceToggle";
 import LocationSearch from "@/components/Search/Location";
+import dynamic from "next/dynamic";
 
-export default function Home() {
+const NoSSR = dynamic(() => import('./NoSSR'), { ssr: false });
+
+const Home  = () => {
   return (
-    <main>
+    <NoSSR>
       <div className="bg-sky h-[70vh]">
         <NavBar />
         <p className="my-16 text-center text-3xl text-white">Your safe Paraglide and sky guide search begins here</p>
@@ -15,6 +18,9 @@ export default function Home() {
       <LocationSearch />
       <Overview />
       <APIsSourceToggle />
-    </main>
+    </NoSSR>
   );
 }
+
+
+export default Home
