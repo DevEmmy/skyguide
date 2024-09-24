@@ -3,6 +3,7 @@ import React, { useState, useEffect, ChangeEvent } from 'react';
 import { RiSearch2Line, RiUserLocationLine } from 'react-icons/ri';
 import Overview from '../Weather/Overview';
 
+
 const LocationSearch = () => {
   const [location, setLocation] = useState('');
   const [autoDetect, setAutoDetect] = useState(false);
@@ -14,7 +15,7 @@ const LocationSearch = () => {
   return (
     <div className="section flex flex-col gap-2 place-items-center justify-center -mt-20 border-xl">
       <div className=' border md:w-3/5 bg-white rounded-xl'>
-        <Overview />
+        {/* <Overview /> */}
         <div className='flex justify-between  py-2 px-3 rounded-xl border m-2'>
           <input
             type="text"
