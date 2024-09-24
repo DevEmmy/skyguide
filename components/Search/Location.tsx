@@ -29,11 +29,11 @@ const LocationSearch = () => {
             <RiSearch2Line />
           </button>
         </div>
-        <div className='bg-secondary/90 py-8 px-4 rounded-b-xl text-white'>
+        <div className='bg-secondary/90 py-7 px-4 rounded-b-xl text-white flex flex-col '>
          <p className='flex gap-1.5 items-center'>
           <RiUserLocationLine />  Find out about the sky conditions instantly
          </p>
-         <p>
+         <p className=''>
           Get a free online estimate of your local weather current condition in minutes
          </p>
         </div>
