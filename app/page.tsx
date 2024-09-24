@@ -35,7 +35,7 @@ function Home() {
 
       <LocationSearch search={search} handleSearch={handleSearch} />
       <Overview locationData={search}/>
-      <LazyMap />
+      <LazyMap region={search} />
       {/* <APIsSourceToggle /> */}
     </main>
   );
