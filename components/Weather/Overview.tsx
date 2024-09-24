@@ -50,7 +50,7 @@ const Overview = ({locationData} : any) => {
 
 
   return (
-    <div className='mx-2 mt-2'>
+    <div className='mx-[5%] mt-10'>
       <h1 className='text-2xl px-1.5'>{locationData}</h1>
       {locationData && (
         <ul className='flex items-center gap-2 overflow-x-auto text-xs md:text-sm divide-x-2 divide-double text-gray-600'>
