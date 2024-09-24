@@ -5,17 +5,47 @@ import NavBar from "@/components/NavBar";
 import { useState } from "react";
 import Overview from "@/components/Weather/Overview";
 import GeoLocator from "@/components/GeoLocation";
-
+import fetchCurrentWeather, { fetchAllRegions } from "@/components/requests/fetchWeather";
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   ssr: false,
   loading: () => <p>Loading...</p>,
 });
 
-
+interface weatherProps {
+  temperature: number;
+  windSpeed: number;
+  windDirection: string,
+  rainChances: {
+    text: string,
+    icon: string,
+  }
+}
 
 function Home() {
   const [search, setSearch] = useState("")
+  const [weatherData, setWeatherData] = useState<weatherProps>();
+
+  const fetchData = async () => {
+    try {
+      const resData = await fetchCurrentWeather(search);
+      console.log(resData);
+      setWeatherData({
+        temperature: resData?.current.temp_c,
+        windSpeed: resData?.current.wind_kph,
+        windDirection: resData?.current.wind_dir,
+        rainChances: {
+          text: resData?.current.condition.text,
+          icon: resData?.current.condition.icon,
+        }
+      })
+
+      fetchAllRegions(search)
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   const handleSearch = (e: any) => {
     setSearch(e.target.value);
@@ -34,13 +64,15 @@ function Home() {
         </div>
       </div>
 
-      <GeoLocator />
-
-      <LocationSearch search={search} handleSearch={handleSearch} />
-      <div className="mt-10">
-        <Overview locationData={search}/>
-      </div>
-      <LazyMap region={search} />
+      <LocationSearch search={search} handleSearch={handleSearch} handleSubmit={fetchData} />
+      {
+        weatherData
+        &&
+        <>
+          <Overview locationData={search} weatherData={weatherData} />
+          <LazyMap region={search} weatherData={weatherData} />
+        </>
+      }
       {/* <APIsSourceToggle /> */}
     </main>
   );
