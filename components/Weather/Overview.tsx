@@ -5,10 +5,6 @@ import fetchCurrentWeather from '../requests/fetchWeather';
 
 
 const Overview = ({locationData, weatherData} : any) => {
-
-
-
-
   return (
     <div className='mx-[5%] mt-2'>
       <h1 className='text-2xl px-1.5'>{locationData}</h1>

@@ -19,7 +19,7 @@ const DefaultIcon = L.icon({
 // Set the default icon for all markers
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const MapReview = ({ region }: any) => {
+const MapReview = ({ region, regions }: any) => {
   const [weatherData, setWeatherData] = useState({
     temperature: '36',
     windSpeed: '260',
@@ -30,12 +30,8 @@ const MapReview = ({ region }: any) => {
   const center: [number, number] = [51.505, -0.09]; // Example latitude and longitude
 
   const position = [51.505, -0.09]
-  const locations = [
-    { name: 'Safe Location ', position: [51.505, -0.09], safe: true },
-    { name: 'Unsafe Location ', position: [51.51, -0.1], safe: false },
-    { name: 'Safe Location', position: [51.52, -0.12], safe: true },
-    { name: 'Unsafe Location ', position: [51.5, -0.08], safe: false },
-  ];
+
+  console.log(regions)
   return (
     <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
       <p className="text-[28px] font-bold">
@@ -43,34 +39,52 @@ const MapReview = ({ region }: any) => {
       </p>
 
       <div className="flex items-center gap-3">
-        <div className="bg-red-400 h-[30px] w-[30px] rounded-full" />
+        <div className="bg-red-600 h-[30px] w-[30px] rounded-full" />
         <p>Indicates unsafe area</p>
       </div>
-
       <div className="flex items-center gap-3">
-        <div className="bg-blue-400 h-[30px] w-[30px] rounded-full" />
+        <div className="bg-yellow-400 h-[30px] w-[30px] rounded-full" />
+        <p>Indicates quite safe area</p>
+      </div>
+      <div className="flex items-center gap-3">
+        <div className="bg-green-600 h-[30px] w-[30px] rounded-full" />
         <p>Indicates safe area</p>
       </div>
 
-      <MapContainer center={[51.505, -0.09]} zoom={13} className="h-[500px]">
+      <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px]">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        {locations.map((location, index) => (
-          <Circle
-            key={index}
-            center={location.position}
-            radius={500} // Adjust the radius as needed
-            color={location.safe ? 'blue' : 'red'} // Use blue for safe, red for unsafe
-            fillOpacity={0.5}
-          >
-            <Popup>
-              {location.name}
-            </Popup>
-          </Circle>
-        ))}
+        {regions?.map((location: any, index: number) => {
+          console.log(location);
+          let circleColor;
+
+          // Set the color based on the rating
+          if (location.rating < 3) {
+            circleColor = 'red'; // Unsafe area
+          } else if (location.rating === 3) {
+            circleColor = 'yellow'; // Neutral area
+          } else {
+            circleColor = 'green'; // Safe area
+          }
+
+          return (
+            <Circle
+              key={index}
+              center={[location.lat, location.lng]}
+              radius={200} // Adjust the radius as needed
+              color={circleColor} // Use the color determined above
+              fillOpacity={0.5}
+            >
+              <Popup>
+                {location.suitability}
+              </Popup>
+            </Circle>
+          );
+        })}
+
       </MapContainer>
     </div>
   );

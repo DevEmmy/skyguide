@@ -5,7 +5,9 @@ import NavBar from "@/components/NavBar";
 import { useState } from "react";
 import Overview from "@/components/Weather/Overview";
 import GeoLocator from "@/components/GeoLocation";
-import fetchCurrentWeather, { fetchAllRegions } from "@/components/requests/fetchWeather";
+import fetchCurrentWeather, { fetchAllRegions, getWeatherForLocations } from "@/components/requests/fetchWeather";
+import {  generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
+import { processWeatherData } from "@/components/utils/processWeather";
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   ssr: false,
@@ -25,6 +27,7 @@ interface weatherProps {
 function Home() {
   const [search, setSearch] = useState("")
   const [weatherData, setWeatherData] = useState<weatherProps>();
+  const [regions, setRegions] = useState<any>()
 
   const fetchData = async () => {
     try {
@@ -39,8 +42,14 @@ function Home() {
           icon: resData?.current.condition.icon,
         }
       })
+     
 
-      fetchAllRegions(search)
+      let res = generateRandomLatLngAround(resData.location.lat, resData.location.lon )
+      let weatherData = await getWeatherForLocations(res)
+      console.log(weatherData)
+      weatherData = processWeatherData(weatherData);
+      
+      setRegions(weatherData);
 
     } catch (error) {
       console.error(error);
@@ -66,11 +75,11 @@ function Home() {
 
       <LocationSearch search={search} handleSearch={handleSearch} handleSubmit={fetchData} />
       {
-        weatherData
+        weatherData && regions
         &&
         <>
           <Overview locationData={search} weatherData={weatherData} />
-          <LazyMap region={search} weatherData={weatherData} />
+          <LazyMap region={search} regions={regions} weatherData={weatherData} />
         </>
       }
       {/* <APIsSourceToggle /> */}
