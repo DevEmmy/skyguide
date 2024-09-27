@@ -6,13 +6,13 @@ import { useEffect, useState } from "react";
 import Overview from "@/components/Weather/Overview";
 import GeoLocator from "@/components/GeoLocation";
 import fetchCurrentWeather, { fetchAllRegions, getWeatherForEachLocation, getWeatherForLocations } from "@/components/requests/fetchWeather";
-import {  generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
+import { generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
 import { processWeatherData } from "@/components/utils/processWeather";
 import Loader from "@/components/Reusables/Loader";
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   ssr: false,
-  loading: () => { return (<Loader />)} ,
+  loading: () => { return (<Loader />) },
 });
 
 interface weatherProps {
@@ -30,12 +30,12 @@ function Home() {
   const [weatherData, setWeatherData] = useState<weatherProps>();
   const [regions, setRegions] = useState<any>()
 
-  const {error, location} = GeoLocator()
+  const { error, location } = GeoLocator()
 
-  useEffect(()=>{
-    let currentData = async ()=>{
+  useEffect(() => {
+    let currentData = async () => {
       let data = await getWeatherForEachLocation(location);
-      
+
       setSearch(data.location.name)
       setWeatherData({
         temperature: data?.current.temp_c,
@@ -46,21 +46,21 @@ function Home() {
           icon: data?.current.condition.icon,
         }
       })
-     
 
-      let res = generateRandomLatLngAround(data.location.lat, data.location.lon )
+
+      let res = generateRandomLatLngAround(data.location.lat, data.location.lon)
       let weatherData = await getWeatherForLocations(res)
-      
+
       weatherData = processWeatherData(weatherData);
-      
+
       setRegions(weatherData);
     }
 
-    if(location){
+    if (location) {
       currentData()
     }
-    
-  },[location])
+
+  }, [location])
 
 
   const fetchData = async () => {
@@ -76,13 +76,13 @@ function Home() {
           icon: resData?.current.condition.icon,
         }
       })
-     
 
-      let res = generateRandomLatLngAround(resData.location.lat, resData.location.lon )
+
+      let res = generateRandomLatLngAround(resData.location.lat, resData.location.lon)
       let weatherData = await getWeatherForLocations(res)
       console.log(weatherData)
       weatherData = processWeatherData(weatherData);
-      
+
       setRegions(weatherData);
 
     } catch (error) {
@@ -117,6 +117,31 @@ function Home() {
         </>
       }
       {/* <APIsSourceToggle /> */}
+
+      <section id="latest-updates" className="updates-section">
+        <div className="container">
+          <h2>Latest Updates</h2>
+          <div className="updates-grid">
+            <div className="update-card">
+              <img src="https://3.files.edl.io/19e3/19/04/16/181536-8710c5d7-51fb-44ae-b218-6489ea724926.png" alt="" />
+              <h3>Weather Update: Calm Skies for the Weekend</h3>
+              <p>Perfect conditions for flying this weekend with clear skies and low wind speed. Don't miss the chance to take flight.</p>
+            </div>
+            <div className="update-card">
+              <img src="https://img.onmanorama.com/content/dam/mm/en/travel/travel-news/images/2023/3/24/paragliding-1.jpg.transform/576x300/image.jpg" alt="" />
+              <h3>Flight Planning Tips for New Pilots</h3>
+              <p>Are you new to flying? Check out our beginner's guide to planning the perfect paragliding flight.</p>
+            </div>
+            <div className="update-card">
+              <img src="https://www.pediatricsoffranklin.com/wp-content/uploads/2021/03/Severe-Weather-768x494.jpg" alt="" />
+              <h3>Weather Warning: High Winds Expected Next Week</h3>
+              <p>Be cautious as high winds are expected starting Monday. Stay updated with the latest forecasts.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
     </main>
   );
 }

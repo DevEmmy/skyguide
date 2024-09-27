@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Outfit, Montserrat } from "next/font/google";
 import "./globals.css";
+import Footer from "@/components/Reusables/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,7 +19,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={outfit.className}>{children}</body>
+      <body className={outfit.className}>
+        {children}
+        <Footer />
+      </body>
+
     </html>
   );
 }
