@@ -1,5 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
+import fetchCurrentWeather, { fetchAllRegions, getWeatherForLocations } from "@/components/requests/fetchWeather";
+import {  generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
 
 interface Geolocation {
   latitude: number;
