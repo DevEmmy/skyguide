@@ -2,16 +2,17 @@
 import LocationSearch from "@/components/Search/Location";
 import dynamic from "next/dynamic";
 import NavBar from "@/components/NavBar";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Overview from "@/components/Weather/Overview";
 import GeoLocator from "@/components/GeoLocation";
-import fetchCurrentWeather, { fetchAllRegions, getWeatherForLocations } from "@/components/requests/fetchWeather";
+import fetchCurrentWeather, { fetchAllRegions, getWeatherForEachLocation, getWeatherForLocations } from "@/components/requests/fetchWeather";
 import {  generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
 import { processWeatherData } from "@/components/utils/processWeather";
+import Loader from "@/components/Reusables/Loader";
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   ssr: false,
-  loading: () => <p>Loading...</p>,
+  loading: () => { return (<Loader />)} ,
 });
 
 interface weatherProps {
@@ -28,6 +29,39 @@ function Home() {
   const [search, setSearch] = useState("")
   const [weatherData, setWeatherData] = useState<weatherProps>();
   const [regions, setRegions] = useState<any>()
+
+  const {error, location} = GeoLocator()
+
+  useEffect(()=>{
+    let currentData = async ()=>{
+      let data = await getWeatherForEachLocation(location);
+      
+      setSearch(data.location.name)
+      setWeatherData({
+        temperature: data?.current.temp_c,
+        windSpeed: data?.current.wind_kph,
+        windDirection: data?.current.wind_dir,
+        rainChances: {
+          text: data?.current.condition.text,
+          icon: data?.current.condition.icon,
+        }
+      })
+     
+
+      let res = generateRandomLatLngAround(data.location.lat, data.location.lon )
+      let weatherData = await getWeatherForLocations(res)
+      
+      weatherData = processWeatherData(weatherData);
+      
+      setRegions(weatherData);
+    }
+
+    if(location){
+      currentData()
+    }
+    
+  },[location])
+
 
   const fetchData = async () => {
     try {

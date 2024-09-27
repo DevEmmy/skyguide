@@ -32,18 +32,7 @@ const GeoLocator = () => {
     getLocation();
   }, []);
 
-  return (
-    <div>
-      {location ? (
-        <p>
-          Latitude: {location.latitude}, Longitude: {location.longitude}
-        </p>
-      ) : (
-        <p>Loading...</p>
-      )}
-      {error && <p>Error: {error}</p>}
-    </div>
-  );
-};
+  return {location, error}
+}
 
-export default GeoLocator;
+export default GeoLocator

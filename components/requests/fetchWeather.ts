@@ -75,5 +75,22 @@ export async function getWeatherForLocations(locations: {lat: number, lng: numbe
   return weatherData;
 }
 
+export async function getWeatherForEachLocation(location: {latitude: number, longtitude: number}) {
+  let data;
+      const url = `http://api.weatherapi.com/v1/current.json?key=${key}&q=${location.latitude},${location.longtitude}`;
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`Error fetching data for location`);
+        }
+         data = await response.json();
+        
+      } catch (error) {
+        console.error(`Failed to fetch weather for [${location.latitude}, ${location.longtitude}]:`, error);
+        return { error: `Failed to fetch weather for [${location.latitude}, ${location.longtitude}]` };
+      }
+      return data
+}
+
 export default fetchCurrentWeather;
 
