@@ -24,6 +24,8 @@ body {
   
   .how-grid-cols {
     @apply max-md:min-w-[240px] rounded-3xl text-white py-4 px-3 flex flex-col gap-40
+
+  }
 /* HTML: <div class="loader"></div> */
 .loader {
     width: 50px;

@@ -96,6 +96,7 @@ function Home() {
 
   return (
     <main>
+
       <LocationSearch search={search} handleSearch={handleSearch} handleSubmit={fetchData} />
       {
         weatherData && regions
