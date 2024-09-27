@@ -14,7 +14,7 @@ const NavBar = () => {
             Weather
           </Link>
 
-          <Link href="/">
+          <Link href="/flight-planning">
             Flight Planning
           </Link>
         </div>
