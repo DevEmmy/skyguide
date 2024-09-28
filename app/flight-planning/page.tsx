@@ -1,5 +1,7 @@
 "use client"
 import fetchCurrentWeather, { getWeatherForLocations } from '@/components/requests/fetchWeather';
+import FlightParameters from '@/components/Reusables/FlightParameters';
+import FlightSimulation from '@/components/Reusables/FlightSimulation';
 import Loader from '@/components/Reusables/Loader';
 import { generateRandomLatLngAround } from '@/components/utils/generateLngNLat';
 import { processWeatherData } from '@/components/utils/processWeather';
@@ -17,8 +19,16 @@ const page = () => {
   const [search, setSearch] = useState("");
   const [weatherData, setWeatherData] = useState<any>();
   const [regions, setRegions] = useState<any>()
+  const [waypoints, setWaypoints] = useState([]);
+  const [flightParams, setFlightParams] = useState(null);
 
-  const fetchData = async () => {
+  const handleParametersSubmit = (params) => {
+    setFlightParams(params);
+  };
+
+  const fetchData = async (e) => {
+    e.preventDefault()
+
     try {
       const resData = await fetchCurrentWeather(search);
       console.log(resData);
@@ -53,8 +63,8 @@ const page = () => {
   return (
     <div className='my-20'>
       <form onSubmit={fetchData} className='p-3 shadow-xl rounded-lg border border-gray-300 flex items-center gap-3 w-1/3 m-auto'>
-        <input type="text" onChange={handleSearch} value={search} className='w-full focus:outline-none py-2 bg-transparent' placeholder='Search for location'/>
-        <RiSearch2Line onClick={fetchData}/>
+        <input type="text" onChange={handleSearch} value={search} className='w-full focus:outline-none py-2 bg-transparent' placeholder='Search for location' />
+        <RiSearch2Line onClick={fetchData} />
       </form>
 
       {
@@ -62,9 +72,15 @@ const page = () => {
         &&
         <>
           <Overview locationData={search} weatherData={weatherData} />
-          <LazyMap region={search} regions={regions} weatherData={weatherData} />
+          <LazyMap region={search} regions={regions} weatherData={weatherData} waypoints={waypoints} setWaypoints={setWaypoints} />
         </>
       }
+
+      <div className='px-[5%]'>
+        <FlightParameters onSubmit={handleParametersSubmit} />
+
+        <FlightSimulation waypoints={waypoints} flightParams={flightParams} />
+      </div>
 
     </div>
   )

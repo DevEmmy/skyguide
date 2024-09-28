@@ -4,7 +4,7 @@ import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Circle, MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
+import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -19,7 +19,7 @@ const DefaultIcon = L.icon({
 // Set the default icon for all markers
 L.Marker.prototype.options.icon = DefaultIcon;
 
-const MapReview = ({ region, regions }: any) => {
+const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
   const [weatherData, setWeatherData] = useState({
     temperature: '36',
     windSpeed: '260',
@@ -31,7 +31,15 @@ const MapReview = ({ region, regions }: any) => {
 
   const position = [51.505, -0.09]
 
-  console.log(regions)
+  const AddMarker = () => {
+    useMapEvents({
+      click(e) {
+        const newWaypoint = [e.latlng.lat, e.latlng.lng];
+        setWaypoints((prevWaypoints) => [...prevWaypoints, newWaypoint]);
+      }
+    });
+    return null;
+  };
   return (
     <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
       <p className="text-[28px] font-bold">
@@ -84,6 +92,19 @@ const MapReview = ({ region, regions }: any) => {
             </Circle>
           );
         })}
+
+        {
+          waypoints &&
+          <>
+            <AddMarker />
+            {waypoints?.map((point, idx) => (
+              <Marker key={idx} position={point}>
+                <Popup>Waypoint {idx + 1}</Popup>
+              </Marker>
+            ))}
+            {waypoints.length > 1 && <Polyline positions={waypoints} color="blue" />}
+          </>
+        }
 
       </MapContainer>
     </div>
