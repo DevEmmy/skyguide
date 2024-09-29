@@ -1,14 +1,11 @@
 import React from 'react'
-import AboutUs from '@/components/AboutUs'
-import Mission from '@/components/Mission'
+
 import HowWeHelp from '@/components/About/HowWeHelp';
-import { RiMapPinLine, RiCloudyLine, RiErrorWarningLine, RiInformationLine, RiUserLine } from 'react-icons/ri';
-import { DivIcon } from 'leaflet';
 const page = () => {
   return (
     <div className='section'>
       <div className="mt-10 mb-10">
-        <h2 className="my-2 font-bold flex justify-center  md:text-[40px] sm:text-[30px] xs:text-[30px] text-[30px]">
+        <h2 className="my-2 font-medium flex justify-center  md:text-[33px] sm:text-[20px] xs:text-[20px] text-[30px]">
         Welcome to SkyGuide
         </h2>
         <p className="flex justify-center text-[#444]">
@@ -16,7 +13,7 @@ const page = () => {
         </p>
       </div>
 
-      <div className="text-lg my-3 text-justify text-[#444] grid grid-cols-[1fr__2fr] gap-6 items-center">
+      <div className="text-lg my-3 text-justify text-[#444] md:grid grid-cols-[1fr__2fr] gap-6 items-center">
         <div className=''>
           <img src='/paraglide1.jpg' className='object-cover rounded-tr-xl rounded-tl-md rounded-br-md rounded-bl-2xl min-w-full h-[400px]'/>
           {/* <video className='w-full h-[400px]' autoPlay controls>
@@ -34,23 +31,23 @@ const page = () => {
       </div>
 
       <div className='section my-10 flex flex-col gap-4'>
-        <h2 className="text-3xl font-semibold mb-4 text-center">Our Team</h2>
-        <div className="flex flex-wrap mb-6 justify-between">
-          <div className="">
+        <h2 className="text-3xl  mb-4 text-center">Our Team</h2>
+        <div className="sm:grid grid-cols-3 mb-6 justify-between items-center gap-2">
+          <div className="py-2 w-full text-center my-4">
+            <div className='grid place-items-center'>
+              <img src="https://via.placeholder.com/150" alt="Founder and Lead Developer" className="rounded-full mb-2" />
+            </div>
+            <h3 className="text-lg font-bold mb-1">Nnenna, Founder</h3>
+            <p className="text-sm">Experienced paraglider and software engineer</p>
+          </div>
+          <div className="py-2 w-full text-center my-4">
             <div className='grid place-items-center'>
               <img src="https://via.placeholder.com/150" alt="Founder and Lead Developer" className="rounded-full mb-2" />
             </div>
             <h3 className="text-lg font-bold mb-1">[Name], Founder and Lead Developer</h3>
             <p className="text-sm">Experienced paraglider and software engineer</p>
           </div>
-          <div className="">
-            <div className='grid place-items-center'>
-              <img src="https://via.placeholder.com/150" alt="Founder and Lead Developer" className="rounded-full mb-2" />
-            </div>
-            <h3 className="text-lg font-bold mb-1">[Name], Founder and Lead Developer</h3>
-            <p className="text-sm">Experienced paraglider and software engineer</p>
-          </div>
-          <div className="">
+          <div className="py-2 w-full text-center my-4">
             <div className='grid place-items-center'>
               <img src="https://via.placeholder.com/150" alt="Founder and Lead Developer" className="rounded-full mb-2" />
             </div>

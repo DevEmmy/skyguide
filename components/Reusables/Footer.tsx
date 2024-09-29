@@ -8,20 +8,20 @@ const Footer = () => {
     <div className="footer-columns">
       <div className="footer-column">
         <h4 className='!text-[36px]'>About Us</h4>
-        <p>SkyGuide provides real-time weather data and flight planning tools for paragliders and aviation enthusiasts.</p>
+        <p className='text-white/80'>SkyGuide provides real-time weather data and flight planning tools for paragliders and aviation enthusiasts.</p>
       </div>
       <div className="footer-column">
         <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#">Weather</a></li>
-          <li><a href="#">Flight Planning</a></li>
+        <ul className='text-white/80'>
+          <li><a href="/">Weather</a></li>
+          <li><a href="/flight-planning">Flight Planning</a></li>
           <li><a href="#">Contact Us</a></li>
           <li><a href="#">Privacy Policy</a></li>
         </ul>
       </div>
       <div className="footer-column">
         <h4>Contact Us</h4>
-        <div className="flex gap-3 items-center p-3 bg-white shadow-lg text-black">
+        <div className="flex gap-3 items-center p-3 bg-white shadow-lg text-black w-full">
           <RiPhoneLine />
           <p>+44-23920932</p>
         </div>

@@ -110,7 +110,7 @@ function Home() {
 
       <section id="latest-updates" className="updates-section">
         <div className="container">
-          <h2>Latest Updates</h2>
+          <h2 className="text-lg">Latest Updates</h2>
           <div className="updates-grid">
             <div className="update-card">
               <img src="https://3.files.edl.io/19e3/19/04/16/181536-8710c5d7-51fb-44ae-b218-6489ea724926.png" alt="" />

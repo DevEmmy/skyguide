@@ -61,8 +61,8 @@ const page = () => {
 
 
   return (
-    <div className='my-20'>
-      <form onSubmit={fetchData} className='p-3 shadow-xl rounded-lg border border-gray-300 flex items-center gap-3 w-1/3 m-auto'>
+    <div className='mb-20 flex flex-col gap-4 -mt-10 md:-mt-20'>
+      <form onSubmit={fetchData} className='p-3 shadow-xl bg-white rounded-lg border border-gray-300 flex items-center gap-3 md:2/3 lg:w-1/3 m-auto'>
         <input type="text" onChange={handleSearch} value={search} className='w-full focus:outline-none py-2 bg-transparent' placeholder='Search for location' />
         <RiSearch2Line onClick={fetchData} />
       </form>

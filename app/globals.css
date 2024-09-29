@@ -63,12 +63,10 @@ body {
     font-size: 14px;
   }
   .footer-columns {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
+    @apply flex max-md:flex-col gap-3 justify-between mb-[20px] 
   }
   .footer-column {
-    max-width: 300px;
+    @apply max-w-fit
   }
   .footer-column h4 {
     margin-bottom: 10px;
@@ -113,21 +111,20 @@ body {
   }
   .updates-section h2 {
     text-align: center;
-    font-size: 36px;
     margin-bottom: 20px;
+    @apply text-2xl
   }
   .updates-grid {
-    display: flex;
-    gap: 20px;
     justify-content: center;
+    @apply flex max-md:flex-col gap-4 lg:gap-5
   }
   .update-card {
     background-color: #fff;
-    padding: 20px;
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
     flex: 1;
     /* max-width: 300px; */
+    @apply p-5 flex flex-col gap-2
   }
 
   .update-card img{
@@ -135,11 +132,11 @@ body {
     @apply object-cover rounded-lg w-full
   }
   .update-card h3 {
-    font-size: 1.2em;
-    margin-bottom: 10px;
+    @apply mb-2 text-lg
   }
   .update-card p {
-    font-size: 1em;
+    @apply text-sm text-gray-700
+
   }
 
   /* src/styles.css */
@@ -179,4 +176,21 @@ h1 {
 
 .flight-form > div {
   @apply p-3 bg-white border border-gray-300 w-fit rounded-lg
+}
+
+.dropdown {
+  @apply absolute right-0 top-full mt-3 w-full p-5 rounded-lg bg-white min-w-[210px] flex flex-col gap-2 justify-end items-end;
+}
+.toogle {border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  flex: 1;
+}
+
+/* glassmorphism */
+.glass {
+  @apply rounded-md bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-50 z-[1000] border-0;
+}
+
+.scrolled {
+  @apply fixed bg-secondary glass border-[#f4f5f4] border top-0 w-full text-gray-800;
 }
