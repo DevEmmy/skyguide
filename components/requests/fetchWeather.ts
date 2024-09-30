@@ -75,7 +75,7 @@ export async function getWeatherForLocations(locations: {lat: number, lng: numbe
   return weatherData;
 }
 
-export async function getWeatherForEachLocation(location: {latitude: number, longtitude: number}) {
+export async function getWeatherForEachLocation(location: any) {
   let data;
       const url = `http://api.weatherapi.com/v1/current.json?key=${key}&q=${location.latitude},${location.longtitude}`;
       try {

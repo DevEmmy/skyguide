@@ -9,7 +9,7 @@ interface Geolocation {
 }
 
 const GeoLocator = () => {
-  const [location, setLocation] = useState<Geolocation | any>();
+  const [location, setLocation] = useState<Geolocation | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
