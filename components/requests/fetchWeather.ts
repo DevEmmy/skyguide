@@ -46,7 +46,7 @@ export const fetchAllRegions = async (region: string)=>{
 export async function getWeatherForLocations(locations: {lat: number, lng: number}[]) {
   const weatherData = await Promise.all(
     locations.map(async (reg) => {
-      const url = `http://api.weatherapi.com/v1/current.json?key=${key}&q=${reg.lat},${reg.lng}`;
+      const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${reg.lat},${reg.lng}`;
       try {
         const response = await fetch(url);
         if (!response.ok) {
@@ -77,7 +77,7 @@ export async function getWeatherForLocations(locations: {lat: number, lng: numbe
 
 export async function getWeatherForEachLocation(location: any) {
   let data;
-      const url = `http://api.weatherapi.com/v1/current.json?key=${key}&q=${location.latitude},${location.longtitude}`;
+      const url = `https://api.weatherapi.com/v1/current.json?key=${key}&q=${location.latitude},${location.longtitude}`;
       try {
         const response = await fetch(url);
         if (!response.ok) {
