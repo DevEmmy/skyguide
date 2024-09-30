@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { RiCloseFill, RiMenu2Line, RiMenu4Line } from 'react-icons/ri';
 
 const NavBar = () => {
-  const [active, setActive] = useState<string>();
+  const [active, setActive] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   const navItems = [
@@ -13,6 +13,10 @@ const NavBar = () => {
     {
       title: 'About',
       href: 'about',
+    },
+    {
+      title: 'Weather',
+      href: ''
     },
     {
       title: 'Flight Planning',
