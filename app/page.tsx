@@ -1,7 +1,6 @@
 "use client"
 import LocationSearch from "@/components/Search/Location";
 import dynamic from "next/dynamic";
-import NavBar from "@/components/NavBar";
 import { useEffect, useState } from "react";
 import Overview from "@/components/Weather/Overview";
 import GeoLocator from "@/components/GeoLocation";
@@ -54,6 +53,7 @@ function Home() {
       weatherData = processWeatherData(weatherData);
 
       setRegions(weatherData);
+      
     }
 
     if (location) {
@@ -89,6 +89,12 @@ function Home() {
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    fetchData();
+  },[search])
+
+
 
   const handleSearch = (e: any) => {
     setSearch(e.target.value);

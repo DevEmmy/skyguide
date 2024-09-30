@@ -41,7 +41,7 @@ const NavBar = () => {
   return (
     <header className='section py-5 ' id='nbar'>
       <nav className='flex items-center justify-between text-white'>
-        <Link href='/' className='text-[24px] font-semibold'>SkyGuide</Link>
+        <Link href='/' className='text-[24px] font-semibold' onClick={() => setActive('')}>SkyGuide</Link>
         
 
         {/*  */}

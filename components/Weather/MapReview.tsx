@@ -20,6 +20,7 @@ const DefaultIcon = L.icon({
 L.Marker.prototype.options.icon = DefaultIcon;
 
 const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
+  const key = process.env.NEXT_PUBLIC_API_KEY;
   const [weatherData, setWeatherData] = useState({
     temperature: '36',
     windSpeed: '260',
@@ -35,7 +36,7 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
     useMapEvents({
       click(e) {
         const newWaypoint = [e.latlng.lat, e.latlng.lng];
-        setWaypoints((prevWaypoints) => [...prevWaypoints, newWaypoint]);
+        setWaypoints((prevWaypoints : any) => [...prevWaypoints, newWaypoint]);
       }
     });
     return null;
@@ -48,10 +49,20 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
 
 
       <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
+      <TileLayer attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
+          url="https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=f09b466c383d46dc9b9122918242309"
+          opacity={0.8}
+          maxZoom={18}
+          minZoom={2}
+          subdomains={['a','b','c']}
+          zIndex={10000}
+          
+        /> 
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+        
           <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
             <div className="flex items-center gap-3">
               <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
@@ -90,7 +101,6 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
               <Popup>
                 {location.suitability}
               </Popup>
-              {/* <div className="bg-secondary">TYhe</div> */}
             </Circle>
           );
         })}
@@ -99,7 +109,7 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
           waypoints &&
           <>
             <AddMarker />
-            {waypoints?.map((point, idx) => (
+            {waypoints?.map((point : any, idx : number) => (
               <Marker key={idx} position={point}>
                 <Popup>Waypoint {idx + 1}</Popup>
               </Marker>
