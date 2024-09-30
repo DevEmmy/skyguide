@@ -15,6 +15,12 @@ const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   loading: () => { return (<Loader />) },
 });
 
+interface FlightParams {
+  glideRatio: number;
+  speed: number;
+  sinkRate: number;
+}
+
 const page = () => {
   const [search, setSearch] = useState("");
   const [weatherData, setWeatherData] = useState<any>();
@@ -22,11 +28,11 @@ const page = () => {
   const [waypoints, setWaypoints] = useState([]);
   const [flightParams, setFlightParams] = useState(null);
 
-  const handleParametersSubmit = (params) => {
+  const handleParametersSubmit = (params : any) => {
     setFlightParams(params);
   };
 
-  const fetchData = async (e) => {
+  const fetchData = async (e : any) => {
     e.preventDefault()
 
     try {

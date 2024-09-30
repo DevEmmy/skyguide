@@ -46,25 +46,26 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
         This is the Map Display for the Location - {region}
       </p>
 
-      <div className="flex items-center gap-3">
-        <div className="bg-red-600 h-[30px] w-[30px] rounded-full" />
-        <p>Indicates unsafe area</p>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="bg-yellow-400 h-[30px] w-[30px] rounded-full" />
-        <p>Indicates quite safe area</p>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="bg-green-600 h-[30px] w-[30px] rounded-full" />
-        <p>Indicates safe area</p>
-      </div>
 
-      <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px]">
+      <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
+          <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
+            <div className="flex items-center gap-3">
+              <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
+              <p>Unsafe area</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
+              <p>Quite safe area</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
+              <p>Safe area</p>
+            </div>
+          </div>
         {regions?.map((location: any, index: number) => {
           console.log(location);
           let circleColor;
@@ -89,6 +90,7 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
               <Popup>
                 {location.suitability}
               </Popup>
+              {/* <div className="bg-secondary">TYhe</div> */}
             </Circle>
           );
         })}

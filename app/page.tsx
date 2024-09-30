@@ -30,7 +30,7 @@ function Home() {
   const [weatherData, setWeatherData] = useState<weatherProps>();
   const [regions, setRegions] = useState<any>()
 
-  const { error, location } = GeoLocator()
+  const { error, location } = GeoLocator();
 
   useEffect(() => {
     let currentData = async () => {
