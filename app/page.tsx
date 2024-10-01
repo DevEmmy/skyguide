@@ -31,6 +31,7 @@ function Home() {
 
   const { error, location } = GeoLocator();
 
+
   useEffect(() => {
     let currentData = async () => {
       let data = await getWeatherForEachLocation(location);
@@ -98,6 +99,7 @@ function Home() {
 
   const handleSearch = (e: any) => {
     setSearch(e.target.value);
+
   }
 
   return (

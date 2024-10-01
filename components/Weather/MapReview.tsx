@@ -5,6 +5,8 @@ import L from 'leaflet';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
+import { LatLng } from "leaflet";
+import { useMap } from "react-leaflet";
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -19,6 +21,23 @@ const DefaultIcon = L.icon({
 // Set the default icon for all markers
 L.Marker.prototype.options.icon = DefaultIcon;
 
+interface MapCentreProps {
+  mapCentre: LatLng;
+}
+
+interface newCoords {
+  changedCoords: {
+    lat : number
+    lng: number
+  }
+}
+
+function UpdateMapCentre(props: MapCentreProps) {
+  const map = useMap();
+  map.panTo(props.mapCentre);
+  return null;
+}
+
 const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
   const key = process.env.NEXT_PUBLIC_API_KEY;
   const [weatherData, setWeatherData] = useState({
@@ -27,6 +46,13 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
     windDirection: '35 Nw',
     rainChances: '26.5'
   });
+
+const [changedCoords, setChangedCoords] = useState<any>({
+    lat: 0,
+    lng: 0,
+  });
+
+
 
   const center: [number, number] = [51.505, -0.09]; // Example latitude and longitude
 
@@ -41,6 +67,17 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
     });
     return null;
   };
+
+  useEffect(() => {
+    setChangedCoords({
+      lat: regions[25].lat,
+      lng: regions[0].lng,
+    });
+
+    // AddMarker();
+    
+  },[regions])
+
   return (
     <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
       <p className="text-[28px] font-bold">
@@ -50,8 +87,8 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
 
       <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
       <TileLayer attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
-          url="https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=f09b466c383d46dc9b9122918242309"
-          opacity={0.8}
+          url="https://{s}.tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=f09b466c383d46dc9b9122918242309"
+          opacity={0.5}
           maxZoom={18}
           minZoom={2}
           subdomains={['a','b','c']}
@@ -62,6 +99,8 @@ const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
+
+        <UpdateMapCentre mapCentre={changedCoords} />
         
           <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
             <div className="flex items-center gap-3">
