@@ -3,6 +3,7 @@ import { Outfit } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Reusables/Footer";
 import Header from "@/components/Reusables/Header";
+import { APIProvider } from "@vis.gl/react-google-maps";
 
 
 // const inter = Inter({ subsets: ["latin"] });
@@ -24,7 +25,9 @@ export default function RootLayout({
 
       <body className={outfit.className}>
         <Header />
+
           {children}
+
         <Footer />
       </body>
 

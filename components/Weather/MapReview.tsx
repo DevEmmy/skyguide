@@ -4,9 +4,10 @@ import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Circle, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
+import { Circle, LayersControl, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
 import { LatLng } from "leaflet";
 import { useMap } from "react-leaflet";
+import HeatmapLayer from "react-leaflet-heat-layer";
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -86,21 +87,18 @@ const [changedCoords, setChangedCoords] = useState<any>({
 
 
       <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
-      <TileLayer attribution='&copy; <a href="https://openweathermap.org/">OpenWeatherMap</a>'
-          url="https://{s}.tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=f09b466c383d46dc9b9122918242309"
-          opacity={0.5}
-          maxZoom={18}
-          minZoom={2}
-          subdomains={['a','b','c']}
-          zIndex={10000}
-          
-        /> 
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
 
-        <UpdateMapCentre mapCentre={changedCoords} />
+        <LayersControl>
+        <LayersControl.BaseLayer name="base" checked>
+          <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          <UpdateMapCentre mapCentre={changedCoords} />
+      </LayersControl.BaseLayer>
+
+        </LayersControl>
+
         
           <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
             <div className="flex items-center gap-3">
