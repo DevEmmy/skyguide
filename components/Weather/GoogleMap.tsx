@@ -79,6 +79,41 @@ const GoogleMapComponent = ({ regions, region }: any) => {
     setFlightShareUrl(shareUrl);
   };
 
+  const getWindMarkerIcon = (windDirection: number) => {
+    return {
+      path: 'M64 1 17.9 127 64 99.8l46.1 27.2L64 1zm0 20.4 32.6 89.2L64 91.3V21.4z', // Arrow path
+      fillColor: 'brown',
+      fillOpacity: 1,
+      strokeWeight: 0.2,
+      rotation: windDirection, // Rotate the SVG based on wind direction
+      scale: 0.1, // Scale the arrow size
+    };
+  };
+
+  const createWindLine = (location: any) => {
+    const { lat, lng, windDirection } = location;
+    const distance = 1000000; // Set a large fixed distance to ensure the line crosses the map (in meters)
+    const angleRad = (windDirection * Math.PI) / 180; // Convert degrees to radians
+  
+    // Earth's radius in meters
+    const R = 6371000;
+  
+    // Calculate the ending latitude and longitude using the Haversine formula for large distances
+    const endLat = lat + (distance / R) * (180 / Math.PI) * Math.cos(angleRad);
+    const endLng = lng + (distance / R) * (180 / Math.PI) * Math.sin(angleRad) / Math.cos(lat * Math.PI / 180);
+  
+    // Calculate the opposite end of the line in the reverse direction (to make the line bi-directional)
+    const startLat = lat - (distance / R) * (180 / Math.PI) * Math.cos(angleRad);
+    const startLng = lng - (distance / R) * (180 / Math.PI) * Math.sin(angleRad) / Math.cos(lat * Math.PI / 180);
+  
+    // Return a path that cuts across the map
+    return [
+      { lat: startLat, lng: startLng }, // Start point (opposite direction)
+      { lat: lat, lng: lng }, // Original point
+      { lat: endLat, lng: endLng }, // End point (forward direction)
+    ];
+  };
+
   const mapContainerStyle = {
     width: '100%',
     height: '500px',
@@ -219,6 +254,26 @@ const GoogleMapComponent = ({ regions, region }: any) => {
               />
             </>
           )}
+
+            {/* Display wind direction lines and markers */}
+            {regions?.map((location: any, idx: number) => (
+            <React.Fragment key={idx}>
+              {/* Draw a line indicating wind direction */}
+              <Polyline
+                path={createWindLine(location)} // Get the path for the polyline
+                options={{
+                  strokeColor: '#ddd', // Color of the line
+                  strokeOpacity: 1,
+                  strokeWeight: 0.2,
+                }}
+              />
+              {/* Display the arrow marker for wind direction */}
+              <Marker
+                position={{ lat: location.lat, lng: location.lng }}
+                icon={getWindMarkerIcon(location.windDirection)} // Custom icon for wind direction
+              />
+            </React.Fragment>
+          ))}
 
           {/* Display InfoWindow for selected location */}
           {selectedLocation && (
