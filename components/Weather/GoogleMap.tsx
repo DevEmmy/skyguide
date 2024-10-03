@@ -1,9 +1,26 @@
 'use client';
-import React, { useState } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline, Circle, HeatmapLayer } from '@react-google-maps/api';
+import React, { useEffect, useState, useRef } from 'react';
+import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline, Circle, HeatmapLayer, useGoogleMap } from '@react-google-maps/api';
+
 
 const GoogleMapComponent = ({ regions, region }: any) => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [coords,setCoords] = useState({
+    lat: regions[0].lat,
+    lng: regions[0].lng
+  })
+
+  const mapRef = useRef<GoogleMap | null>(null);
+
+  useEffect(() => {
+    if (mapRef.current && googleMapsReady) {
+      setCoords({
+        lat: regions[0].lat,
+        lng: regions[0].lng
+      })
+      mapRef.current.panTo(coords);
+    }
+  }, [regions]);
 
   // Define custom icons for different ratings
   const getMarkerIcon = (rating: number) => {
@@ -52,6 +69,13 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       { lat: endLat, lng: endLng }, // End point (forward direction)
     ];
   };
+
+  useEffect(() => {
+    setCoords({
+      lat: regions[0].lat,
+      lng: regions[0].lng
+    })
+  }, [regions])
   
 
   const mapContainerStyle = {
@@ -67,47 +91,94 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   : [];
 
   return (
-    <div className="section overflow-x-hidden my-10 flex flex-col gap-5">
-        <p className="text-[28px] font-bold">This is the Map Display for the Location - {region}</p>
-    <APIProvider apiKey="AIzaSyAUfYI1dWp9ox12hg_kU_oi2zEUW-Aci1E">    
-        <Map
-          style={{width: '100', height: '500px'}}
-          defaultCenter={{lat: regions[25].lat, lng: regions[0].lng}}
-          defaultZoom={13}
-          gestureHandling={'greedy'}
-          disableDefaultUI={true}/>
+    <div className="section overflow-x-hidden my-10 flex flex-col gap-5 relative">
+      <p className="text-[28px] font-bold">This is the Map Display for the Location - {region}</p>
 
-            <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 left-0 z-[1000]'>
-                <div className="flex items-center gap-3">
-                <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
-                <p>Unsafe area</p>
-                </div>
-                <div className="flex items-center gap-3">
-                <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
-                <p>Quite safe area</p>
-                </div>
-                <div className="flex items-center gap-3">
-                <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
-                <p>Safe area</p>
-                </div>
+      <LoadScript 
+        googleMapsApiKey="AIzaSyAUfYI1dWp9ox12hg_kU_oi2zEUW-Aci1E"
+        libraries={['visualization']}  // Include the visualization library for HeatmapLayer
+        onLoad={()=>setGoogleMapsReady(true)}
+      >
+        <GoogleMap
+          mapContainerStyle={mapContainerStyle}
+          center={{ lat: coords?.lat, lng: coords?.lng }}
+          zoom={15} // Adjust zoom level based on region size
+          options={{ gestureHandling: 'greedy', disableDefaultUI: true }}
+          
+        >
+
+
+          {/* Map through the regions array to place markers */}
+          {regions.map((location: any, idx: number) => (
+            <Marker
+              key={idx}
+              position={{ lat: location.lat, lng: location.lng }}
+              icon={getMarkerIcon(location.rating)} // Custom icon based on rating
+              onClick={() => setSelectedLocation(location)} // Set selected location for info window
+            />
+          ))}
+
+          {/* Heatmap Layer */}
+          <HeatmapLayer
+            data={heatmapData}
+            options={{
+              radius: 60, // Adjust radius for heat spots
+              opacity: 0.6, // Adjust opacity for visibility
+            }}
+          />
+
+          {/* Display wind direction lines and markers */}
+          {regions?.map((location: any, idx: number) => (
+            <React.Fragment key={idx}>
+              {/* Draw a line indicating wind direction */}
+              <Polyline
+                path={createWindLine(location)} // Get the path for the polyline
+                options={{
+                  strokeColor: 'gray', // Color of the line
+                  strokeOpacity: 1,
+                  strokeWeight: 0.2,
+                }}
+              />
+              {/* Display the arrow marker for wind direction */}
+              <Marker
+                position={{ lat: location.lat, lng: location.lng }}
+                icon={getWindMarkerIcon(location.windDirection)} // Custom icon for wind direction
+              />
+            </React.Fragment>
+          ))}
+
+          {/* Display InfoWindow for selected location */}
+          {selectedLocation && (
+            <InfoWindow
+              position={{ lat: selectedLocation.lat, lng: selectedLocation.lng }}
+              onCloseClick={() => setSelectedLocation(null)}>
+              <div>
+                <h3>{selectedLocation.location}</h3>
+                <p>{selectedLocation.region}, {selectedLocation.country}</p>
+                <p>Suitability: {selectedLocation.suitability}</p>
+                <p>Rating: {selectedLocation.rating}</p>
+              </div>
+            </InfoWindow>
+          )}
+
+          {/* Legend */}
+          <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border absolute top-0 p-2 left-0 z-[1000]'>
+            <div className="flex items-center gap-3">
+              <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
+              <p>Unsafe area</p>
             </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
+              <p>Quite safe area</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
+              <p>Safe area</p>
+            </div>
+          </div>
 
-            {earthquakesGeojson && (
-                <Heatmap
-                geojson={earthquakesGeojson}
-                radius={radius}
-                opacity={opacity}
-                />
-            )}
-
-    <ControlPanel
-        radius={radius}
-        opacity={opacity}
-        onRadiusChanged={setRadius}
-        onOpacityChanged={setOpacity}
-      />
-        
-    </APIProvider>
+        </GoogleMap>
+      </LoadScript>
     </div>
   );
 };
