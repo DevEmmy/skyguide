@@ -1,13 +1,10 @@
 'use client';
 import "leaflet/dist/leaflet.css";
-
 import L from 'leaflet';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Circle, LayersControl, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
 import { LatLng } from "leaflet";
-import { useMap } from "react-leaflet";
-import HeatmapLayer from "react-leaflet-heat-layer";
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -19,65 +16,42 @@ const DefaultIcon = L.icon({
   shadowSize: [41, 41], // size of the shadow
 });
 
-// Set the default icon for all markers
 L.Marker.prototype.options.icon = DefaultIcon;
 
-interface MapCentreProps {
-  mapCentre: LatLng;
+interface WindData {
+  lat: number;
+  lng: number;
+  windSpeed: number;
+  windDirection: number; // Degrees (0-360)
 }
 
-interface newCoords {
-  changedCoords: {
-    lat : number
-    lng: number
-  }
-}
-
-function UpdateMapCentre(props: MapCentreProps) {
-  const map = useMap();
-  map.panTo(props.mapCentre);
-  return null;
-}
-
-const MapReview = ({ region, regions, waypoints, setWaypoints }: any) => {
-  const key = process.env.NEXT_PUBLIC_API_KEY;
-  const [weatherData, setWeatherData] = useState({
-    temperature: '36',
-    windSpeed: '260',
-    windDirection: '35 Nw',
-    rainChances: '26.5'
-  });
-
-const [changedCoords, setChangedCoords] = useState<any>({
-    lat: 0,
-    lng: 0,
-  });
-
-
-
-  const center: [number, number] = [51.505, -0.09]; // Example latitude and longitude
-
-  const position = [51.505, -0.09]
-
-  const AddMarker = () => {
-    useMapEvents({
-      click(e) {
-        const newWaypoint = [e.latlng.lat, e.latlng.lng];
-        setWaypoints((prevWaypoints : any) => [...prevWaypoints, newWaypoint]);
-      }
-    });
-    return null;
-  };
+const MapComponent = () => {
+  const [windData, setWindData] = useState<WindData[]>([]);
 
   useEffect(() => {
-    setChangedCoords({
-      lat: regions[25].lat,
-      lng: regions[0].lng,
-    });
+    // Fetch wind data (you can fetch real wind data from a weather API or use dummy data)
+    const data: WindData[] = [
+      { lat: 51.505, lng: -0.09, windSpeed: 20, windDirection: 45 }, // wind blowing to NE
+      { lat: 51.515, lng: -0.08, windSpeed: 15, windDirection: 90 }, // wind blowing to E
+      { lat: 51.525, lng: -0.07, windSpeed: 10, windDirection: 135 }, // wind blowing to SE
+    ];
+    setWindData(data);
+  }, []);
 
-    // AddMarker();
-    
-  },[regions])
+  const createWindPolylines = (data: WindData) => {
+    const { lat, lng, windDirection, windSpeed } = data;
+    const startPoint = new LatLng(lat, lng);
+
+    const distance = windSpeed * 100; // Scale the distance
+    const angleInRadians = (windDirection - 90) * (Math.PI / 180); // Convert degrees to radians
+
+    const endPoint = new LatLng(
+      lat + (distance / 111000) * Math.cos(angleInRadians), // Convert distance to lat-long degrees
+      lng + (distance / 111000) * Math.sin(angleInRadians)
+    );
+
+    return [startPoint, endPoint];
+  };
 
   return (
     <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
@@ -115,7 +89,6 @@ const [changedCoords, setChangedCoords] = useState<any>({
             </div>
           </div>
         {regions?.map((location: any, index: number) => {
-          console.log(location);
           let circleColor;
 
           // Set the color based on the rating
@@ -128,36 +101,35 @@ const [changedCoords, setChangedCoords] = useState<any>({
           }
 
           return (
-            <Circle
-              key={index}
-              center={[location.lat, location.lng]}
-              radius={200} // Adjust the radius as needed
-              color={circleColor} // Use the color determined above
-              fillOpacity={0.5}
-            >
-              <Popup>
-                {location.suitability}
-              </Popup>
-            </Circle>
+            <>
+              <Polyline key={idx} positions={windPolyline} color="blue">
+                <Popup>
+                  Wind speed: {data.windSpeed} m/s<br />
+                  Wind direction: {data.windDirection}°
+                </Popup>
+              </Polyline>
+
+              {/* Use PolylineDecorator to add arrows */}
+              <L.polylineDecorator
+                positions={windPolyline}
+                patterns={[
+                  {
+                    offset: '100%',
+                    repeat: 0,
+                    symbol: L.Symbol.arrowHead({
+                      pixelSize: 15,
+                      polygon: false,
+                      pathOptions: { stroke: true, color: 'red' }
+                    }),
+                  },
+                ]}
+              />
+            </>
           );
         })}
-
-        {
-          waypoints &&
-          <>
-            <AddMarker />
-            {waypoints?.map((point : any, idx : number) => (
-              <Marker key={idx} position={point}>
-                <Popup>Waypoint {idx + 1}</Popup>
-              </Marker>
-            ))}
-            {waypoints.length > 1 && <Polyline positions={waypoints} color="blue" />}
-          </>
-        }
-
       </MapContainer>
     </div>
   );
 };
 
-export default MapReview;
+export default MapComponent;
