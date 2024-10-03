@@ -17,54 +17,75 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 };
 
 const GoogleMapComponent = ({ regions, region }: any) => {
+  const [center,setCenter] = useState({ lat: regions[0].lat, lng: regions[0].lng });
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
+  const [flightPath, setFlightPath] = useState<any[]>([]); // Array to store waypoints (turning points)
+  const [googleMapsReady, setGoogleMapsReady] = useState(false);
+  const [totalDistance, setTotalDistance] = useState<number>(0); // Total flight distance
+  const [glideRatio, setGlideRatio] = useState<number>(0); // Glide ratio input
+  const [airspeed, setAirspeed] = useState<number>(0); // Airspeed input (km/h)
+  const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
+  const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
 
-  // Define custom icons for different ratings
-  const getMarkerIcon = (rating: number) => {
-    if (rating < 3) {
-      return 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'; // Red for unsafe
-    } else if (rating === 3) {
-      return 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'; // Yellow for neutral
-    } else {
-      return 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'; // Green for safe
+  // UseEffect to update map
+  useEffect(() => {
+    setCenter({
+      lat: regions[0].lat,
+      lng: regions[0].lng
+    })
+  },[regions,region]);
+
+  // Handle map clicks to add waypoints (turning points)
+  const handleMapClick = (event: any) => {
+    const { latLng } = event;
+    const lat = latLng.lat();
+    const lng = latLng.lng();
+
+    // Add the clicked point as a waypoint (turning point)
+    setFlightPath((prevPath) => [...prevPath, { lat, lng }]);
+  };
+
+  // Handle marker drag to update waypoint position
+  const handleMarkerDrag = (index: number, event: any) => {
+    const updatedLat = event.latLng.lat();
+    const updatedLng = event.latLng.lng();
+
+    // Update the specific waypoint that was dragged
+    setFlightPath((prevPath) => {
+      const updatedPath = [...prevPath];
+      updatedPath[index] = { lat: updatedLat, lng: updatedLng };
+      return updatedPath;
+    });
+  };
+
+  // Calculate total distance whenever flightPath changes
+  useEffect(() => {
+    if (flightPath.length > 1) {
+      let distance = 0;
+      for (let i = 0; i < flightPath.length - 1; i++) {
+        distance += calculateDistance(
+          flightPath[i].lat,
+          flightPath[i].lng,
+          flightPath[i + 1].lat,
+          flightPath[i + 1].lng
+        );
+      }
+      setTotalDistance(distance);
     }
-  };
+  }, [flightPath]);
 
-  const [googleMapsReady, setGoogleMapsReady] = useState(false); 
+  // Calculate flight time based on airspeed and distance
+  useEffect(() => {
+    if (totalDistance > 0 && airspeed > 0) {
+      setFlightTime(totalDistance / airspeed); // Time = Distance / Speed
+    }
+  }, [totalDistance, airspeed]);
 
-  const getWindMarkerIcon = (windDirection: number) => {
-    return {
-      path: 'M64 1 17.9 127 64 99.8l46.1 27.2L64 1zm0 20.4 32.6 89.2L64 91.3V21.4z', // Arrow path
-      fillColor: 'brown',
-      fillOpacity: 1,
-      strokeWeight: 0.2,
-      rotation: windDirection, // Rotate the SVG based on wind direction
-      scale: 0.1, // Scale the arrow size
-    };
-  };
-
-  const createWindLine = (location: any) => {
-    const { lat, lng, windDirection } = location;
-    const distance = 1000000; // Set a large fixed distance to ensure the line crosses the map (in meters)
-    const angleRad = (windDirection * Math.PI) / 180; // Convert degrees to radians
-  
-    // Earth's radius in meters
-    const R = 6371000;
-  
-    // Calculate the ending latitude and longitude using the Haversine formula for large distances
-    const endLat = lat + (distance / R) * (180 / Math.PI) * Math.cos(angleRad);
-    const endLng = lng + (distance / R) * (180 / Math.PI) * Math.sin(angleRad) / Math.cos(lat * Math.PI / 180);
-  
-    // Calculate the opposite end of the line in the reverse direction (to make the line bi-directional)
-    const startLat = lat - (distance / R) * (180 / Math.PI) * Math.cos(angleRad);
-    const startLng = lng - (distance / R) * (180 / Math.PI) * Math.sin(angleRad) / Math.cos(lat * Math.PI / 180);
-  
-    // Return a path that cuts across the map
-    return [
-      { lat: startLat, lng: startLng }, // Start point (opposite direction)
-      { lat: lat, lng: lng }, // Original point
-      { lat: endLat, lng: endLng }, // End point (forward direction)
-    ];
+  // Generate shareable flight URL
+  const handleShareFlight = () => {
+    const pathData = flightPath.map(point => `lat=${point.lat}&lng=${point.lng}`).join('&');
+    const shareUrl = `${window.location.origin}/share?${pathData}`;
+    setFlightShareUrl(shareUrl);
   };
 
   const mapContainerStyle = {
@@ -151,7 +172,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       >
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          center={{ lat: coords?.lat, lng: coords?.lng }}
+          center={center}
           zoom={15} // Adjust zoom level based on region size
           options={{ gestureHandling: 'greedy', disableDefaultUI: true }}
           onClick={handleMapClick} // Handle map clicks to add waypoints
