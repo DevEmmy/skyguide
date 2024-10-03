@@ -17,6 +17,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 };
 
 const GoogleMapComponent = ({ regions, region }: any) => {
+  const [center,setCenter] = useState({ lat: regions[0].lat, lng: regions[0].lng });
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [flightPath, setFlightPath] = useState<any[]>([]); // Array to store waypoints (turning points)
   const [googleMapsReady, setGoogleMapsReady] = useState(false);
@@ -25,6 +26,14 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   const [airspeed, setAirspeed] = useState<number>(0); // Airspeed input (km/h)
   const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
   const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
+
+  // UseEffect to update map
+  useEffect(() => {
+    setCenter({
+      lat: regions[0].lat,
+      lng: regions[0].lng
+    })
+  },[regions,region]);
 
   // Handle map clicks to add waypoints (turning points)
   const handleMapClick = (event: any) => {
@@ -198,7 +207,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       >
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
-          center={{ lat: regions[0].lat, lng: regions[0].lng }}
+          center={center}
           zoom={15} // Adjust zoom level based on region size
           options={{ gestureHandling: 'greedy', disableDefaultUI: true }}
           onClick={handleMapClick} // Handle map clicks to add waypoints

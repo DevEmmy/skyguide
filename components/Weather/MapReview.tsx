@@ -25,7 +25,7 @@ interface WindData {
   windDirection: number; // Degrees (0-360)
 }
 
-const MapComponent = () => {
+const MapComponent = ({regions, region} : any) => {
   const [windData, setWindData] = useState<WindData[]>([]);
 
   useEffect(() => {
@@ -54,80 +54,83 @@ const MapComponent = () => {
   };
 
   return (
-    <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
-      <p className="text-[28px] font-bold">
-        This is the Map Display for the Location - {region}
-      </p>
+    // <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
+    //   <p className="text-[28px] font-bold">
+    //     This is the Map Display for the Location - {region}
+    //   </p>
 
 
-      <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
+    //   <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
 
-        <LayersControl>
-        <LayersControl.BaseLayer name="base" checked>
-          <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-          <UpdateMapCentre mapCentre={changedCoords} />
-      </LayersControl.BaseLayer>
+    //     <LayersControl>
+    //     <LayersControl.BaseLayer name="base" checked>
+    //       <TileLayer
+    //           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    //           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+    //         />
+    //       <UpdateMapCentre mapCentre={changedCoords} />
+    //   </LayersControl.BaseLayer>
 
-        </LayersControl>
+    //     </LayersControl>
 
         
-          <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
-            <div className="flex items-center gap-3">
-              <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
-              <p>Unsafe area</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
-              <p>Quite safe area</p>
-            </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
-              <p>Safe area</p>
-            </div>
-          </div>
-        {regions?.map((location: any, index: number) => {
-          let circleColor;
+    //       <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
+    //         <div className="flex items-center gap-3">
+    //           <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
+    //           <p>Unsafe area</p>
+    //         </div>
+    //         <div className="flex items-center gap-3">
+    //           <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
+    //           <p>Quite safe area</p>
+    //         </div>
+    //         <div className="flex items-center gap-3">
+    //           <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
+    //           <p>Safe area</p>
+    //         </div>
+    //       </div>
+    //     {regions?.map((location: any, index: number) => {
+    //       let circleColor;
 
-          // Set the color based on the rating
-          if (location.rating < 3) {
-            circleColor = 'red'; // Unsafe area
-          } else if (location.rating === 3) {
-            circleColor = 'yellow'; // Neutral area
-          } else {
-            circleColor = 'green'; // Safe area
-          }
+    //       // Set the color based on the rating
+    //       if (location.rating < 3) {
+    //         circleColor = 'red'; // Unsafe area
+    //       } else if (location.rating === 3) {
+    //         circleColor = 'yellow'; // Neutral area
+    //       } else {
+    //         circleColor = 'green'; // Safe area
+    //       }
 
-          return (
-            <>
-              <Polyline key={idx} positions={windPolyline} color="blue">
-                <Popup>
-                  Wind speed: {data.windSpeed} m/s<br />
-                  Wind direction: {data.windDirection}°
-                </Popup>
-              </Polyline>
+    //       return (
+    //         <>
+    //           <Polyline key={idx} positions={windPolyline} color="blue">
+    //             <Popup>
+    //               Wind speed: {data.windSpeed} m/s<br />
+    //               Wind direction: {data.windDirection}°
+    //             </Popup>
+    //           </Polyline>
 
-              {/* Use PolylineDecorator to add arrows */}
-              <L.polylineDecorator
-                positions={windPolyline}
-                patterns={[
-                  {
-                    offset: '100%',
-                    repeat: 0,
-                    symbol: L.Symbol.arrowHead({
-                      pixelSize: 15,
-                      polygon: false,
-                      pathOptions: { stroke: true, color: 'red' }
-                    }),
-                  },
-                ]}
-              />
-            </>
-          );
-        })}
-      </MapContainer>
+    //           {/* Use PolylineDecorator to add arrows */}
+    //           <L.polylineDecorator
+    //             positions={windPolyline}
+    //             patterns={[
+    //               {
+    //                 offset: '100%',
+    //                 repeat: 0,
+    //                 symbol: L.Symbol.arrowHead({
+    //                   pixelSize: 15,
+    //                   polygon: false,
+    //                   pathOptions: { stroke: true, color: 'red' }
+    //                 }),
+    //               },
+    //             ]}
+    //           />
+    //         </>
+    //       );
+    //     })}
+    //   </MapContainer>
+    // </div>
+    <div>
+      tunji
     </div>
   );
 };
