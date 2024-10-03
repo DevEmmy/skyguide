@@ -18,7 +18,7 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
 
 const GoogleMapComponent = ({ regions, region }: any) => {
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
-  const [flightPath, setFlightPath] = useState<any[]>([]); // Array to store two points for flight planning
+  const [flightPath, setFlightPath] = useState<any[]>([]); // Array to store waypoints (turning points)
   const [googleMapsReady, setGoogleMapsReady] = useState(false);
   const [totalDistance, setTotalDistance] = useState<number>(0); // Total flight distance
   const [glideRatio, setGlideRatio] = useState<number>(0); // Glide ratio input
@@ -26,27 +26,41 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
   const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
 
-  // Handle map clicks for flight planning (limit to two points)
+  // Handle map clicks to add waypoints (turning points)
   const handleMapClick = (event: any) => {
     const { latLng } = event;
     const lat = latLng.lat();
     const lng = latLng.lng();
 
-    // If two points exist, replace the first point
-    if (flightPath.length === 2) {
-      setFlightPath([{ lat, lng }, flightPath[1]]);
-    } else {
-      setFlightPath((prevPath) => [...prevPath, { lat, lng }]);
-    }
+    // Add the clicked point as a waypoint (turning point)
+    setFlightPath((prevPath) => [...prevPath, { lat, lng }]);
+  };
+
+  // Handle marker drag to update waypoint position
+  const handleMarkerDrag = (index: number, event: any) => {
+    const updatedLat = event.latLng.lat();
+    const updatedLng = event.latLng.lng();
+
+    // Update the specific waypoint that was dragged
+    setFlightPath((prevPath) => {
+      const updatedPath = [...prevPath];
+      updatedPath[index] = { lat: updatedLat, lng: updatedLng };
+      return updatedPath;
+    });
   };
 
   // Calculate total distance whenever flightPath changes
   useEffect(() => {
-    if (flightPath.length === 2) {
-      const distance = calculateDistance(
-        flightPath[0].lat, flightPath[0].lng,
-        flightPath[1].lat, flightPath[1].lng
-      );
+    if (flightPath.length > 1) {
+      let distance = 0;
+      for (let i = 0; i < flightPath.length - 1; i++) {
+        distance += calculateDistance(
+          flightPath[i].lat,
+          flightPath[i].lng,
+          flightPath[i + 1].lat,
+          flightPath[i + 1].lng
+        );
+      }
       setTotalDistance(distance);
     }
   }, [flightPath]);
@@ -179,18 +193,22 @@ const GoogleMapComponent = ({ regions, region }: any) => {
           />
 
           {/* Flight Path Polyline */}
-          {flightPath.length === 2 && (
+          {flightPath.length > 1 && (
             <>
-              <Marker 
-                position={flightPath[0]} 
-                icon='http://maps.google.com/mapfiles/ms/icons/green-dot.png' // Green marker for start
-                label="Start"
-              />
-              <Marker 
-                position={flightPath[1]} 
-                icon='http://maps.google.com/mapfiles/ms/icons/red-dot.png' // Red marker for end
-                label="End"
-              />
+              {flightPath.map((point, index) => (
+                <Marker
+                  key={index}
+                  position={point}
+                  draggable={true} // Make the waypoints (turning points) draggable
+                  onDragEnd={(event) => handleMarkerDrag(index, event)}
+                  icon={index === 0 
+                    ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' // Start point marker
+                    : index === flightPath.length - 1
+                    ? 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' // End point marker
+                    : 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png' // Turning points marker
+                  }
+                />
+              ))}
               <Polyline
                 path={flightPath}
                 options={{
