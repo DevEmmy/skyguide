@@ -26,7 +26,7 @@ export function generateRandomLatLngAround(
   lat: number,
   lng: number,
   radiusInMeters: number = 5000,
-  pointsCount: number = 1000
+  pointsCount: number = 100
 ): LatLng[] {
   const latInRadians = degreesToRadians(lat);
   const lngInRadians = degreesToRadians(lng);
