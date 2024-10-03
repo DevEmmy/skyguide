@@ -4,24 +4,8 @@ import React, {useState, useEffect, useMemo} from 'react'
 import Heatmap from './Heatmap'
 import {EarthquakesGeojson, loadEarthquakeGeojson} from './earthquakes';
 import ControlPanel from './control-panel';
-import { GoogleMapsOverlay } from '@deck.gl/google-maps';
 import { useMap } from '@vis.gl/react-google-maps';
 
-
-export const DeckGlOverlay = ({layers} : any) => {
-  const deck = useMemo(() => new GoogleMapsOverlay({interleaved: true}), []);
-
-  const map = useMap();
-  useEffect(() => {
-    deck.setMap(map);
-    
-    return () => deck.setMap(null);
-  }, [map]);
-  useEffect(() => deck.setProps({layers}), [layers]);
-
-  // no dom rendered by this component
-  return null;
-};
 
 const GoogleMap = ({regions, region} : any) => {
   const [data, setData] = useState<any[]>([]);
