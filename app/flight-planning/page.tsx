@@ -78,7 +78,7 @@ const page = () => {
         &&
         <>
           <Overview locationData={search} weatherData={weatherData} />
-          <LazyMap region={search} regions={regions} weatherData={weatherData} waypoints={waypoints} setWaypoints={setWaypoints} />
+          {/* <LazyMap region={search} regions={regions} weatherData={weatherData} waypoints={waypoints} setWaypoints={setWaypoints} /> */}
         </>
       }
 

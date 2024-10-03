@@ -13,6 +13,8 @@ interface WeatherResponse {
       condition: { text: string };
       wind_kph: number;
       humidity: number;
+      wind_dir: string;
+      dewpoint_c: any;
     };
   }
   

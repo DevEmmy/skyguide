@@ -33,7 +33,7 @@ function Home() {
   const [search, setSearch] = useState("")
   const [weatherData, setWeatherData] = useState<weatherProps>();
   const [regions, setRegions] = useState<any>();
-  const [waypoints, setWaypoints] = useState([]);
+  const [waypoints, setWaypoints] = useState<any>([]);
   const [flightParams, setFlightParams] = useState(null);
 
   const { error, location } = GeoLocator();
