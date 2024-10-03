@@ -268,14 +268,14 @@ const GoogleMapComponent = ({ regions, region }: any) => {
             {regions?.map((location: any, idx: number) => (
             <React.Fragment key={idx}>
               {/* Draw a line indicating wind direction */}
-              <Polyline
+              {/* <Polyline
                 path={createWindLine(location)} // Get the path for the polyline
                 options={{
                   strokeColor: 'red', // Color of the line
-                  strokeOpacity: 1,
-                  strokeWeight: 2,
+                  strokeOpacity: 0.3,
+                  strokeWeight: 1,
                 }}
-              />
+              /> */}
               {/* Display the arrow marker for wind direction */}
               <Marker
                 position={{ lat: location.lat, lng: location.lng }}
