@@ -89,7 +89,6 @@ const MapComponent = () => {
             </div>
           </div>
         {regions?.map((location: any, index: number) => {
-          console.log(location);
           let circleColor;
 
           // Set the color based on the rating

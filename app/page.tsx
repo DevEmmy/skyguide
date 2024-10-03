@@ -78,7 +78,7 @@ function Home() {
   const fetchData = async () => {
     try {
       const resData = await fetchCurrentWeather(search);
-      console.log(resData);
+      // console.log(resData);
       setWeatherData({
         temperature: resData?.current.temp_c,
         windSpeed: resData?.current.wind_kph,
@@ -96,7 +96,7 @@ function Home() {
 
       let res = generateRandomLatLngAround(resData.location.lat, resData.location.lon)
       let weatherData = await getWeatherForLocations(res)
-      console.log(weatherData)
+      // console.log(weatherData)
       weatherData = processWeatherData(weatherData);
 
       setRegions(weatherData);
