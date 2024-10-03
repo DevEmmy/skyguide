@@ -95,7 +95,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       fillOpacity: 1,
       strokeWeight: 0.2,
       rotation: windDirection, // Rotate the SVG based on wind direction
-      scale: 0.4, // Scale the arrow size
+      scale: 0.3, // Scale the arrow size
     };
   };
 
