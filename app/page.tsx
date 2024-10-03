@@ -8,6 +8,7 @@ import fetchCurrentWeather, { fetchAllRegions, getWeatherForEachLocation, getWea
 import { generateRandomLatLngAround } from "@/components/utils/generateLngNLat";
 import { processWeatherData } from "@/components/utils/processWeather";
 import Loader from "@/components/Reusables/Loader";
+import GoogleMap from "@/components/Weather/GoogleMap";
 
 const LazyMap = dynamic(() => import("@/components/Weather/MapReview"), {
   ssr: false,
@@ -18,6 +19,10 @@ interface weatherProps {
   temperature: number;
   windSpeed: number;
   windDirection: string,
+  humidity: string,
+  gust_kph: number,
+  vis_km: number,
+  precip_mm: number,
   rainChances: {
     text: string,
     icon: string,
@@ -27,7 +32,9 @@ interface weatherProps {
 function Home() {
   const [search, setSearch] = useState("")
   const [weatherData, setWeatherData] = useState<weatherProps>();
-  const [regions, setRegions] = useState<any>()
+  const [regions, setRegions] = useState<any>();
+  const [waypoints, setWaypoints] = useState([]);
+  const [flightParams, setFlightParams] = useState(null);
 
   const { error, location } = GeoLocator();
 
@@ -41,6 +48,10 @@ function Home() {
         temperature: data?.current.temp_c,
         windSpeed: data?.current.wind_kph,
         windDirection: data?.current.wind_dir,
+        humidity: data?.current.humidity,
+        gust_kph: data?.current.gust_kph,
+        vis_km: data?.current.vis_km,
+        precip_mm: data?.current.precip_mm,
         rainChances: {
           text: data?.current.condition.text,
           icon: data?.current.condition.icon,
@@ -72,6 +83,10 @@ function Home() {
         temperature: resData?.current.temp_c,
         windSpeed: resData?.current.wind_kph,
         windDirection: resData?.current.wind_dir,
+        humidity: resData?.current.humidity,
+        gust_kph: resData?.current.gust_kph,
+        vis_km: resData?.current.vis_km,
+        precip_mm: resData?.current.precip_mm,
         rainChances: {
           text: resData?.current.condition.text,
           icon: resData?.current.condition.icon,
@@ -105,16 +120,19 @@ function Home() {
   return (
     <main>
 
+
       <LocationSearch search={search} handleSearch={handleSearch} handleSubmit={fetchData} />
       {
         weatherData && regions
         &&
         <>
           <Overview locationData={search} weatherData={weatherData} />
-          <LazyMap region={search} regions={regions} weatherData={weatherData} />
+          <GoogleMap region={search} regions={regions} />
+          {/* <LazyMap region={search} regions={regions} weatherData={weatherData}  waypoints={waypoints} setWaypoints={setWaypoints} /> */}
         </>
       }
       {/* <APIsSourceToggle /> */}
+
 
       <section id="latest-updates" className="updates-section">
         <div className="container">

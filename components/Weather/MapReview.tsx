@@ -1,10 +1,10 @@
 'use client';
 import "leaflet/dist/leaflet.css";
 import L from 'leaflet';
-import 'leaflet-polylinedecorator'; // Import the polylinedecorator to extend leaflet functionality
-import { useEffect, useState } from 'react';
-import { MapContainer, TileLayer, Polyline, Popup } from 'react-leaflet';
-import { LatLng } from 'leaflet';
+import { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Circle, LayersControl, MapContainer, Marker, Polyline, Popup, TileLayer, useMapEvents } from 'react-leaflet';
+import { LatLng } from "leaflet";
 
 const DefaultIcon = L.icon({
   iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
@@ -54,15 +54,53 @@ const MapComponent = () => {
   };
 
   return (
-    <div className='map'>
-      <MapContainer center={[51.505, -0.09]} zoom={13} className="h-[500px]">
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+    <div className='mx-[5%] my-10 flex flex-col gap-5' id="map">
+      <p className="text-[28px] font-bold">
+        This is the Map Display for the Location - {region}
+      </p>
 
-        {windData.map((data, idx) => {
-          const windPolyline = createWindPolylines(data);
+
+      <MapContainer center={[regions[25].lat, regions[0].lng]} zoom={13} className="h-[500px] relative">
+
+        <LayersControl>
+        <LayersControl.BaseLayer name="base" checked>
+          <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+          <UpdateMapCentre mapCentre={changedCoords} />
+      </LayersControl.BaseLayer>
+
+        </LayersControl>
+
+        
+          <div className='bg-white/80 shadow-2xl text-secondary glass flex flex-col gap-2 border rounded absolute top-0 p-2 right-0 z-[1000]'>
+            <div className="flex items-center gap-3">
+              <div className="bg-red-600 h-[15px] w-[15px] rounded-full" />
+              <p>Unsafe area</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-yellow-400 h-[15px] w-[15px] rounded-full" />
+              <p>Quite safe area</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="bg-green-600 h-[15px] w-[15px] rounded-full" />
+              <p>Safe area</p>
+            </div>
+          </div>
+        {regions?.map((location: any, index: number) => {
+          console.log(location);
+          let circleColor;
+
+          // Set the color based on the rating
+          if (location.rating < 3) {
+            circleColor = 'red'; // Unsafe area
+          } else if (location.rating === 3) {
+            circleColor = 'yellow'; // Neutral area
+          } else {
+            circleColor = 'green'; // Safe area
+          }
+
           return (
             <>
               <Polyline key={idx} positions={windPolyline} color="blue">
