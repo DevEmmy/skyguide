@@ -17,11 +17,7 @@ const NavBar = () => {
     {
       title: 'Weather',
       href: ''
-    },
-    {
-      title: 'Flight Planning',
-      href: 'flight-planning',
-    },
+    }
   ];
 
   useEffect(() => {

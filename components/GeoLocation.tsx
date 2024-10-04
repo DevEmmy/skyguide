@@ -24,6 +24,11 @@ const GeoLocator = () => {
           },
           (error) => {
             setError(error.message);
+          },
+          {
+            enableHighAccuracy: true, // This improves accuracy by using GPS if available
+            timeout: 10000, // Time limit in milliseconds before erroring out
+            maximumAge: 0, // Prevent caching of old locations
           }
         );
       } else {

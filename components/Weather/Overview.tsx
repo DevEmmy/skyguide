@@ -6,10 +6,10 @@ import fetchCurrentWeather from '../requests/fetchWeather';
 
 const Overview = ({locationData, weatherData} : any) => {
   return (
-    <div className='mx-[5%] mt-2'>
+    <div className='section mt-6 flex flex-col gap-3'>
       <h1 className='text-2xl px-1.5'>{locationData}</h1>
       {locationData && (
-        <ul className='flex items-center justify-between overflow-x-auto text-xs md:text-sm  divide-double text-gray-600'>
+        <ul className='flex gap-3 items-center justify-between overflow-x-auto text-xs md:text-sm  divide-double text-gray-600'>
           <li className=''>Temperature: {weatherData?.temperature}°C</li>
           <li className=''>Wind Speed: {weatherData?.windSpeed} km/h</li>
           <li className=''>Wind Direction: {weatherData?.windDirection}</li>

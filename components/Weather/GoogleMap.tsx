@@ -1,6 +1,9 @@
 'use client';
 import React, { useState, useEffect } from 'react';
-import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline, HeatmapLayer } from '@react-google-maps/api';
+import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline, HeatmapLayer, GoogleMapProps } from '@react-google-maps/api';
+import MapIndicator from './MapIndicator';
+import { RiLayoutGridLine } from 'react-icons/ri';
+import Image from 'next/image';
 
 // Utility function to calculate distance between two points using Haversine formula
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -16,7 +19,9 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return distance;
 };
 
+
 const GoogleMapComponent = ({ regions, region }: any) => {
+  const [showFlightPlan, setShowFlightPlan] = useState<boolean>(false);
   const [center,setCenter] = useState({ lat: regions[0].lat, lng: regions[0].lng });
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
   const [flightPath, setFlightPath] = useState<any[]>([]); // Array to store waypoints (turning points)
@@ -24,8 +29,13 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   const [totalDistance, setTotalDistance] = useState<number>(0); // Total flight distance
   const [glideRatio, setGlideRatio] = useState<number>(0); // Glide ratio input
   const [airspeed, setAirspeed] = useState<number>(0); // Airspeed input (km/h)
+  const [speedUnit,setSpeedUnit] = useState('kph');
   const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
   const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
+
+  const airSpeedUnitData = [
+    'kph','knots','mph'
+  ]
 
   // UseEffect to update map
   useEffect(() => {
@@ -78,6 +88,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   useEffect(() => {
     if (totalDistance > 0 && airspeed > 0) {
       setFlightTime(totalDistance / airspeed); // Time = Distance / Speed
+      speedUnit == 'kph' ? setFlightTime(totalDistance / airspeed) : speedUnit == 'knts' ? setFlightTime(totalDistance / (airspeed * 1.852001)) : setFlightTime(totalDistance / (airspeed * 1.609344));
     }
   }, [totalDistance, airspeed]);
 
@@ -139,79 +150,129 @@ const GoogleMapComponent = ({ regions, region }: any) => {
     <div className="section overflow-x-hidden my-10 flex flex-col gap-5 relative">
       <p className="text-[28px] font-bold">This is the Map Display for the Location - {region}</p>
 
-      <div className='flex items-center gap-3'>
-        <p>For Flight Planning</p>
-        <input type="date" className='p-3'/>
-      </div>
 
-      {/* Flight Planning Input Section */}
-      <div className="bg-white p-4 shadow-lg border rounded-lg my-4">
-        <h3 className="text-xl font-bold">Flight Planning</h3>
-        <p>Total Distance: {totalDistance.toFixed(2)} km</p>
-        
-        <div className="flex items-center gap-3">
-          <label htmlFor="glide-ratio">Glide Ratio:</label>
-          <input 
-            type="number" 
-            id="glide-ratio"
-            className="border p-2" 
-            value={glideRatio} 
-            onChange={(e) => setGlideRatio(Number(e.target.value))} 
-          />
-        </div>
-
-        <div className="flex items-center gap-3">
-          <label htmlFor="airspeed">Airspeed (km/h):</label>
-          <input 
-            type="number" 
-            id="airspeed"
-            className="border p-2" 
-            value={airspeed} 
-            onChange={(e) => setAirspeed(Number(e.target.value))} 
-          />
-        </div>
-
-        {/* Display Estimated Glide Range */}
-        {glideRatio > 0 && (
-          <p>Estimated Flight Range: {(totalDistance / glideRatio).toFixed(2)} km</p>
-        )}
-
-        {/* Display Time of Flight */}
-        {flightTime > 0 && (
-          <p>Estimated Flight Time: {flightTime.toFixed(2)} hours</p>
-        )}
-
-        {/* Share Flight Button */}
-        <button 
-          onClick={handleShareFlight}
-          className="mt-3 p-3 bg-blue-600 text-white rounded"
-        >
-          Share Flight Plan
-        </button>
-
-        {/* Display Share URL */}
-        {flightShareUrl && (
-          <div className="mt-3">
-            <p>Share this flight plan:</p>
-            <a href={flightShareUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
-              {flightShareUrl}
-            </a>
-          </div>
-        )}
-      </div>
 
       <LoadScript
         googleMapsApiKey="AIzaSyAUfYI1dWp9ox12hg_kU_oi2zEUW-Aci1E"
         libraries={['visualization']}  // Include the visualization library for HeatmapLayer
         onLoad={() => setGoogleMapsReady(true)}
       >
+
+        {/*Control Tabs  */}
+        <div className="flex justify-between">
+          <div className="flex gap-1">
+          <button className='bg-secondary px-3 items-center flex w-fit'>
+            <Image src='/paraglide.svg' width={100} height={100} className='size-7' alt='paraglide'/>
+          </button>
+          <button className='bg-secondary px-3 items-center flex w-fit'>
+            <Image src='/handglide.svg' width={100} height={100} className='size-9' alt='paraglide'/>
+          </button>
+          <button className={`text-white px-3 items-center flex w-fit ${showFlightPlan ? 'bg-blue-500' : 'bg-secondary'}`} onClick={() => setShowFlightPlan(!showFlightPlan)}>
+            Xc planner
+          </button>
+          </div>
+
+          <div className='flex'>
+
+            {
+              airSpeedUnitData?.map((item: string, i: number) => {
+                return (
+                  <button 
+                    onClick={() => setSpeedUnit(item)}
+                  className={`px-3 py-1 pt-2 flex w-fit text-white ${item == speedUnit ? 'bg-blue-500' : 'bg-secondary'}`} >
+                    {item}
+                  </button>
+                )
+              })
+            }
+
+          </div>
+        </div>
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={center}
           zoom={15} // Adjust zoom level based on region size
-          options={{ gestureHandling: 'greedy', disableDefaultUI: true }}
+          options={{ gestureHandling: 'greedy', disableDefaultUI: true, zoomControl: true, panControl: true, scaleControl : false, mapTypeControl: true, rotateControl: true, isFractionalZoomEnabled: false, fullscreenControl: true}}
           onClick={handleMapClick} // Handle map clicks to add waypoints
         >
+          <MapIndicator />
+
+
+          {
+            showFlightPlan && (
+              <div className='absolute left-4 bottom-0  '>
+              {/* <div className='flex items-center gap-3'>
+                <p>For Flight Planning</p>
+                <input type="date" className='p-3'/>
+              </div> */}
+
+              {/* Flight Planning Input Section */}
+              <div className="bg-white p-4 shadow-lg border rounded-lg my-4 text-sm flex flex-col gap-1 md:gap-2 max-w-[300px] overflow-hidden">
+                <div className="flex items-center">
+                <h3 className="text-xl font-bold">Flight Planning</h3>
+                </div>
+
+                <div className='flex gap-2 items-center'>
+                  <label htmlFor="date">Date:</label>
+                  <input type="date" className='p-3 border'/>
+                </div>
+                
+                <div className="flex shrink items-center gap-3 my-1">
+                  <label htmlFor="glide-ratio">Glide Ratio:</label>
+                  <input 
+                    type="number" 
+                    id="glide-ratio"
+                    className="border p-2 overflow-x-hidden shrink" 
+                    value={glideRatio} 
+                    onChange={(e) => setGlideRatio(Number(e.target.value))} 
+                  />
+                </div>
+
+                <div className="flex items-center gap-3 my-1">
+                  <label htmlFor="airspeed">Airspeed ({speedUnit}):</label>
+                  <input 
+                    type="number" 
+                    id="airspeed"
+                    className="border p-2 shrink overflow-x-hidden" 
+                    value={airspeed} 
+                    onChange={(e) => setAirspeed(Number(e.target.value))} 
+                  />
+                </div>
+
+                <p>Total Distance: {totalDistance.toFixed(2)} km</p>
+
+                {/* Display Estimated Glide Range */}
+                {glideRatio > 0 && (
+                  <p>Estimated Flight Range: {(totalDistance / glideRatio).toFixed(2)} km</p>
+                )}
+
+                {/* Display Time of Flight */}
+                {flightTime > 0 && (
+                  <p>Estimated Flight Time: {flightTime.toFixed(2)} hours</p>
+                )}
+
+                {/* Share Flight Button */}
+                <button 
+                  onClick={handleShareFlight}
+                  className="mt-3 p-3 bg-blue-600 text-white rounded w-fit"
+                >
+                  Share Flight Plan
+                </button>
+
+                {/* Display Share URL */}
+                {flightShareUrl && (
+                  <div className="mt-3">
+                    <p>Share this flight plan:</p>
+                    <a href={flightShareUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline  overflow-x-auto text-balance">
+                      {flightShareUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
+              </div>
+            )
+          }
+
           {/* Map through the regions array to place markers */}
           {regions.map((location: any, idx: number) => (
             <Marker
@@ -280,6 +341,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
               <Marker
                 position={{ lat: location.lat, lng: location.lng }}
                 icon={getWindMarkerIcon(location.windDirection)} // Custom icon for wind direction
+                
               />
             </React.Fragment>
           ))}

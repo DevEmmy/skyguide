@@ -36,7 +36,9 @@ function Home() {
   const [waypoints, setWaypoints] = useState<any>([]);
   const [flightParams, setFlightParams] = useState(null);
 
-  const { error, location } = GeoLocator();
+  const {location, error}  = GeoLocator();
+
+  // const loc = useLocation();
 
 
   useEffect(() => {
