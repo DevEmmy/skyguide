@@ -7,6 +7,10 @@ const FlightPlanning = () => {
     const [airspeed, setAirspeed] = useState<number>(0); // Airspeed input (km/h)
     const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
     const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
+
+    const handleShareFlight = () => {
+        // const pathData = flightPath.map(point => `lat=${point.lat}&lng=${point.lng}`)
+      };
   return (
     <div>
         <div className='flex items-center gap-3'>
