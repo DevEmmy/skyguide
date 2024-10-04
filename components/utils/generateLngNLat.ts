@@ -25,8 +25,8 @@ function randomBetween(min: number, max: number): number {
 export function generateRandomLatLngAround(
   lat: number,
   lng: number,
-  radiusInMeters: number = 5000,
-  pointsCount: number = 100
+  radiusInMeters: number = 10000,
+  pointsCount: number = 500
 ): LatLng[] {
   const latInRadians = degreesToRadians(lat);
   const lngInRadians = degreesToRadians(lng);

@@ -106,7 +106,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       fillOpacity: 1,
       strokeWeight: 0.2,
       rotation: windDirection, // Rotate the SVG based on wind direction
-      scale: 0.1, // Scale the arrow size
+      scale: 0.3, // Scale the arrow size
     };
   };
 
@@ -329,14 +329,14 @@ const GoogleMapComponent = ({ regions, region }: any) => {
             {regions?.map((location: any, idx: number) => (
             <React.Fragment key={idx}>
               {/* Draw a line indicating wind direction */}
-              <Polyline
+              {/* <Polyline
                 path={createWindLine(location)} // Get the path for the polyline
                 options={{
-                  strokeColor: '#ddd', // Color of the line
-                  strokeOpacity: 1,
-                  strokeWeight: 0.2,
+                  strokeColor: 'red', // Color of the line
+                  strokeOpacity: 0.3,
+                  strokeWeight: 1,
                 }}
-              />
+              /> */}
               {/* Display the arrow marker for wind direction */}
               <Marker
                 position={{ lat: location.lat, lng: location.lng }}
