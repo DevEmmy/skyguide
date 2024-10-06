@@ -12,21 +12,21 @@ const DayWeatherTable = ({ date,weatherData }: any) => {
     'Cloud',
     'Feels Like (C)',
     // 'Feels Like (F)',
-    'Precipitation (mm)',
+    // 'Precipitation (mm)',
     // 'Precipitation (in)',
     'Wind Direction',
     // 'Wind Gust (mph)',
     'Wind Gust (kph)',
-    'UV Index',
+    // 'UV Index',
     'Visibility (km)',
     // 'Visibility (miles)',
   ];
   return (
-    <div className='my-10 flex flex-col gap-3'>
+    <div className='my-10 flex flex-col gap-3 overflow-scroll'>
       <p className='text-center'> Forecasted weather data for <span>
         <em>{date}</em>
         </span></p>
-      <table className='table overflow-x-auto text-xs table-auto'>
+      <table className='table overflow-x-scroll whitespace-nowrap text-xs table-auto'>
         <thead>
           <tr className='text-center'>
             {tableHeaders?.map((header, index) => (
@@ -50,12 +50,12 @@ const DayWeatherTable = ({ date,weatherData }: any) => {
               <td>{row.cloud}</td>
               <td>{row.feelslike_c}</td>
               {/* <td>{row.feelslike_f}</td> */}
-              <td>{row.precip_mm}</td>
+              {/* <td>{row.precip_mm}</td> */}
               {/* <td>{row.precip_in}</td> */}
               <td>{row.wind_dir}</td>
               {/* <td>{row.gust_mph}</td> */}
               <td>{row.gust_kph}</td>
-              <td>{row.uv}</td>
+              {/* <td>{row.uv}</td> */}
               <td>{row.vis_km}</td>
               {/* <td>{row.vis_miles}</td> */}
             </tr>

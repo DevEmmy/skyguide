@@ -272,24 +272,21 @@ const GoogleMapComponent = ({ regions, region }: any) => {
         onLoad={() => setGoogleMapsReady(true)}
       >
 
-      {showFlightPlan && hourData &&  (
+      {time && date && hourData &&  (
           <Overview locationData={dateTime} weatherData={hourData} />
         )
       }
         {/*Control Tabs  */}
-        <div className="flex justify-between gap-1">
-          <div className="flex gap-2">
-            <button className={`text-white px-3 items-center flex w-fit ${showFlightPlan ? 'bg-blue-500' : 'bg-secondary'}`} onClick={() => setShowFlightPlan(!showFlightPlan)}>
+        <div className="flex max-md:flex-col justify-between gap-1">
+          <div className="flex gap-1 md:gap-2">
+            <button className={`text-white px-2 md:px-3 py-2 items-center whitespace-nowrap flex w-fit ${showFlightPlan ? 'bg-blue-500' : 'bg-secondary'}`} onClick={() => setShowFlightPlan(!showFlightPlan)}>
               Flight planner
             </button>
-              <>
-                <input type='date' value={date} className='px-3' onChange={handleDateChange}  min={minDate} max={maxDate}  />
-            <input type='time' step={3600} className='px-3' value={time} onChange={handleTimeChange} />
-              </>
-            
+            <input type='date' value={date} className='shadow w-fit px-2 md:px-3' onChange={handleDateChange}  min={minDate} max={maxDate}  />
+            <input type='time' step={3600} className='shadow w-fit px-2 md:px-3' value={time} onChange={handleTimeChange} />
           </div>
 
-          <div className='flex'>
+          <div className='flex gap-2'>
 
             {
               airSpeedUnitData?.map((item: string, i: number) => {

@@ -122,6 +122,8 @@ function Home() {
   return (
     <main>
 
+      {/* <Loader /> */}
+
 
       <LocationSearch search={search} handleSearch={handleSearch} handleSubmit={fetchData} />
       {
@@ -134,6 +136,10 @@ function Home() {
         </>
       }
       {/* <APIsSourceToggle /> */}
+
+      {/* <Loader /> */}
+
+      {/* <input type='datetime-local' /> */}
 
 
       <section id="latest-updates" className="updates-section">

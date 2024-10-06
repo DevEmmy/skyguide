@@ -5,7 +5,7 @@ const Overview = ({locationData, weatherData} : any) => {
     <div className='section mt-6 flex flex-col gap-3 max-w-full'>
       <h1 className='text-2xl px-1.5'>{locationData}</h1>
       {locationData && (
-        <ul className='flex gap-3 items-center justify-between overflow-x-auto text-xs md:text-sm  divide-double text-gray-600'>
+        <ul className='flex gap-3 items-center justify-between overflow-x-auto whitespace-nowrap text-xs md:text-sm divide-x-2 text-gray-600 scrollbar-thin'>
           <li className=''>Temperature: {weatherData?.temperature}°C</li>
           <li className=''>Wind Speed: {weatherData?.windSpeed} km/h</li>
           <li className=''>Wind Direction: {weatherData?.windDirection}</li>
