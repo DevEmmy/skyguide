@@ -2,8 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, LoadScript, Marker, InfoWindow, Polyline, HeatmapLayer, GoogleMapProps } from '@react-google-maps/api';
 import MapIndicator from './MapIndicator';
-import { RiLayoutGridLine } from 'react-icons/ri';
-import Image from 'next/image';
+import generatePDF, { Margin, Options, Resolution, usePDF } from "react-to-pdf";
+import { fetchFutureWeather, getWeatherForLocations } from '../requests/fetchWeather';
+
+import Overview from './Overview';
+import DayWeatherTable from './DayWeatherTable';
+import ShareFlightPlan from './ShareFlightPlan';
+import { RiDownload2Fill } from 'react-icons/ri';
 
 // Utility function to calculate distance between two points using Haversine formula
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -19,8 +24,24 @@ const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: numbe
   return distance;
 };
 
+interface weatherProps {
+  temperature: number;
+  windSpeed: number;
+  windDirection: string,
+  humidity: string,
+  gust_kph: number,
+  vis_km: number,
+  precip_mm: number,
+  rainChances: {
+    text: string,
+    icon: string,
+  }
+}
 
 const GoogleMapComponent = ({ regions, region }: any) => {
+  const [date,setDate] = useState(); // predict weather data for future dates
+  const [time,setTime] = useState<string>(); // predict time on future date
+  const [dateTime,setDateTime] = useState<string>();  // combine date and time
   const [showFlightPlan, setShowFlightPlan] = useState<boolean>(false);
   const [center,setCenter] = useState({ lat: regions[0].lat, lng: regions[0].lng });
   const [selectedLocation, setSelectedLocation] = useState<any>(null);
@@ -32,6 +53,11 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   const [speedUnit,setSpeedUnit] = useState('kph');
   const [flightTime, setFlightTime] = useState<number>(0); // Time of flight
   const [flightShareUrl, setFlightShareUrl] = useState<string>(''); // Flight share URL
+  const [minDate, setMinDate] = useState('');
+  const [maxDate, setMaxDate] = useState('');
+  const [weatherData, setWeatherData] = useState<any>();
+  const [hourData,setHourData] = useState<weatherProps>();
+  const [isPdfSaving,setIsPdfSaving] = useState<boolean>(false);
 
   const airSpeedUnitData = [
     'kph','knots','mph'
@@ -39,11 +65,55 @@ const GoogleMapComponent = ({ regions, region }: any) => {
 
   // UseEffect to update map
   useEffect(() => {
+
     setCenter({
       lat: regions[0].lat,
       lng: regions[0].lng
     })
+
+
   },[regions,region]);
+
+  const fetchFutureData = async () => {
+    try {
+      const resData = await fetchFutureWeather(region, date, dateTime);
+      console.log(resData);
+      let dataVal = resData?.forecast?.forecastday[0]?.hour;
+      const hourData = dataVal.find((item : any) => item.time === dateTime);
+
+      setWeatherData(resData?.forecast?.forecastday[0]?.hour)
+
+      setHourData(
+        {
+          temperature: hourData?.temp_c,
+          windSpeed: hourData?.wind_kph,
+          windDirection: hourData?.wind_dir,
+          humidity: hourData?.humidity,
+          gust_kph: hourData?.gust_kph,
+          vis_km: hourData?.vis_km,
+          precip_mm: hourData?.precip_mm,
+          rainChances: {
+            text: hourData?.condition.text,
+            icon: hourData?.condition.icon,
+          }
+        }
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  // Search for future data
+  useEffect( () => {
+    if (date !== '' && time !== '') {
+      setDateTime(`${date} ${time}`)
+    }
+  },[date,time])
+
+  useEffect(() => {
+    fetchFutureData();
+
+  },[dateTime]);
 
   // Handle map clicks to add waypoints (turning points)
   const handleMapClick = (event: any) => {
@@ -92,11 +162,25 @@ const GoogleMapComponent = ({ regions, region }: any) => {
     }
   }, [totalDistance, airspeed]);
 
+  // Download flight plan
+  const downloadPDF = async () => {
+    await generatePDF(() => document.getElementById("container"), {
+      method: "save",
+      filename: `${region}-${dateTime}-flight-plan.pdf`,
+      page: { margin: Margin.MEDIUM },
+    });
+
+    setIsPdfSaving(false);
+  };
+
   // Generate shareable flight URL
-  const handleShareFlight = () => {
+  const handleShareFlight = (e: any) => {
+    e.preventDefault();
+    fetchFutureData();
     const pathData = flightPath.map(point => `lat=${point.lat}&lng=${point.lng}`).join('&');
     const shareUrl = `${window.location.origin}/share?${pathData}`;
     setFlightShareUrl(shareUrl);
+    // downloadPDF();
   };
 
   const getWindMarkerIcon = (windDirection: number) => {
@@ -137,6 +221,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
   const mapContainerStyle = {
     width: '100%',
     height: '500px',
+    border: '1px solid #7777',
   };
 
   const heatmapData = googleMapsReady
@@ -146,8 +231,37 @@ const GoogleMapComponent = ({ regions, region }: any) => {
       }))
     : [];
 
+    useEffect(() => {
+      const today = new Date();
+      const minDateCalc = new Date(today);
+      minDateCalc.setDate(minDateCalc.getDate() + 20);
+      const maxDateCalc = new Date(today);
+      maxDateCalc.setDate(maxDateCalc.getDate() + 300);
+  
+      setMinDate(minDateCalc.toISOString().split('T')[0]);
+      setMaxDate(maxDateCalc.toISOString().split('T')[0]);
+    }, []);
+
+    const handleDateChange = (e : any) => {
+      setDate(e.target.value);
+    } 
+    const handleTimeChange = (e: any) => {
+      const newTime = e.target.value;
+      const [hours, minutes] = newTime.split(':');
+      
+      // Pad hours and minutes with leading zeros if necessary
+      const formattedHours = hours.padStart(2, '0');
+      const formattedMinutes = '00';
+      
+      const formattedTime = `${formattedHours}:${formattedMinutes}`;
+      
+      console.log(formattedTime);
+      setTime(formattedTime);
+    };
+
+
   return (
-    <div className="section overflow-x-hidden my-10 flex flex-col gap-5 relative">
+    <div className="section overflow-x-hidden my-10 flex flex-col gap-5 relative" id='container'>
       <p className="text-[28px] font-bold">This is the Map Display for the Location - {region}</p>
 
 
@@ -158,18 +272,21 @@ const GoogleMapComponent = ({ regions, region }: any) => {
         onLoad={() => setGoogleMapsReady(true)}
       >
 
+      {showFlightPlan && hourData &&  (
+          <Overview locationData={dateTime} weatherData={hourData} />
+        )
+      }
         {/*Control Tabs  */}
-        <div className="flex justify-between">
-          <div className="flex gap-1">
-          <button className='bg-secondary px-3 items-center flex w-fit'>
-            <Image src='/paraglide.svg' width={100} height={100} className='size-7' alt='paraglide'/>
-          </button>
-          <button className='bg-secondary px-3 items-center flex w-fit'>
-            <Image src='/handglide.svg' width={100} height={100} className='size-9' alt='paraglide'/>
-          </button>
-          <button className={`text-white px-3 items-center flex w-fit ${showFlightPlan ? 'bg-blue-500' : 'bg-secondary'}`} onClick={() => setShowFlightPlan(!showFlightPlan)}>
-            Xc planner
-          </button>
+        <div className="flex justify-between gap-1">
+          <div className="flex gap-2">
+            <button className={`text-white px-3 items-center flex w-fit ${showFlightPlan ? 'bg-blue-500' : 'bg-secondary'}`} onClick={() => setShowFlightPlan(!showFlightPlan)}>
+              Flight planner
+            </button>
+              <>
+                <input type='date' value={date} className='px-3' onChange={handleDateChange}  min={minDate} max={maxDate}  />
+            <input type='time' step={3600} className='px-3' value={time} onChange={handleTimeChange} />
+              </>
+            
           </div>
 
           <div className='flex'>
@@ -177,7 +294,7 @@ const GoogleMapComponent = ({ regions, region }: any) => {
             {
               airSpeedUnitData?.map((item: string, i: number) => {
                 return (
-                  <button 
+                  <button
                     onClick={() => setSpeedUnit(item)}
                   className={`px-3 py-1 pt-2 flex w-fit text-white ${item == speedUnit ? 'bg-blue-500' : 'bg-secondary'}`} >
                     {item}
@@ -185,13 +302,15 @@ const GoogleMapComponent = ({ regions, region }: any) => {
                 )
               })
             }
-
           </div>
         </div>
+
+
+
         <GoogleMap
           mapContainerStyle={mapContainerStyle}
           center={center}
-          zoom={15} // Adjust zoom level based on region size
+          zoom={13} // Adjust zoom level based on region size
           options={{ gestureHandling: 'greedy', disableDefaultUI: true, zoomControl: true, panControl: true, scaleControl : false, mapTypeControl: true, rotateControl: true, isFractionalZoomEnabled: false, fullscreenControl: true}}
           onClick={handleMapClick} // Handle map clicks to add waypoints
         >
@@ -207,16 +326,11 @@ const GoogleMapComponent = ({ regions, region }: any) => {
               </div> */}
 
               {/* Flight Planning Input Section */}
-              <div className="bg-white p-4 shadow-lg border rounded-lg my-4 text-sm flex flex-col gap-1 md:gap-2 max-w-[300px] overflow-hidden">
+              <form className="bg-white p-4 shadow-lg border rounded-lg my-4 text-sm flex flex-col gap-1 md:gap-2 max-w-[300px] overflow-hidden" onSubmit={handleShareFlight}>
                 <div className="flex items-center">
                 <h3 className="text-xl font-bold">Flight Planning</h3>
                 </div>
-
-                <div className='flex gap-2 items-center'>
-                  <label htmlFor="date">Date:</label>
-                  <input type="date" className='p-3 border'/>
-                </div>
-                
+               
                 <div className="flex shrink items-center gap-3 my-1">
                   <label htmlFor="glide-ratio">Glide Ratio:</label>
                   <input 
@@ -252,23 +366,35 @@ const GoogleMapComponent = ({ regions, region }: any) => {
                 )}
 
                 {/* Share Flight Button */}
-                <button 
-                  onClick={handleShareFlight}
-                  className="mt-3 p-3 bg-blue-600 text-white rounded w-fit"
-                >
-                  Share Flight Plan
-                </button>
+                <div className='flex gap-2'>
+                  <button 
+                    // onClick={handleShareFlight}
+                    type='submit'
+                    className="mt-3 p-3 bg-blue-600 text-white rounded w-fit"
+                  >
+                    Share Flight Plan
+                  </button>
+
+                  {flightShareUrl && (
+                    <button className="mt-3 p-3 bg-black/70 hover:bg-black/50 text-white rounded w-fit flex items-center gap-1" disabled={isPdfSaving} onClick={() => { setIsPdfSaving(true); downloadPDF();}}>
+                      <RiDownload2Fill size={17}/>
+                      </button>
+                  )}
+                </div>
+
+                {/* <ShareFlightPlan /> */}
 
                 {/* Display Share URL */}
                 {flightShareUrl && (
-                  <div className="mt-3">
+                  <div className="">
+                    
                     <p>Share this flight plan:</p>
                     <a href={flightShareUrl} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline  overflow-x-auto text-balance">
                       {flightShareUrl}
                     </a>
                   </div>
                 )}
-              </div>
+              </form>
               </div>
             )
           }
@@ -361,6 +487,11 @@ const GoogleMapComponent = ({ regions, region }: any) => {
             </InfoWindow>
           )}
         </GoogleMap>
+          {
+           date && time && (
+            <DayWeatherTable date={date} weatherData={weatherData} />
+          )
+          }
       </LoadScript>
     </div>
   );

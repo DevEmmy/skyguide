@@ -22,6 +22,23 @@ const fetchCurrentWeather = async (location : any) => {
   }
 };
 
+export const fetchFutureWeather = async (location : any , predictDate : any, time: any) => {
+  // alert(baseURL)
+  try {
+    const response = await axios.get(`${baseURL}future.json?key=${key}`, {
+      params: {
+        q: location,
+        dt: predictDate,
+      },
+    });
+
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 const searchCurrentWeather = async (location : any) => {
   // alert(baseURL)
   try {

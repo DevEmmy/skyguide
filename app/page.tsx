@@ -128,7 +128,7 @@ function Home() {
         weatherData && regions
         &&
         <>
-          <Overview locationData={search} weatherData={weatherData} />
+          <Overview locationData={`current data : ${search}`} weatherData={weatherData} />
           <GoogleMap region={search} regions={regions} />
           {/* <LazyMap region={search} regions={regions} weatherData={weatherData}  waypoints={waypoints} setWaypoints={setWaypoints} /> */}
         </>
