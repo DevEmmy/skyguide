@@ -45,7 +45,7 @@ function Home() {
     let currentData = async () => {
       let data = await getWeatherForEachLocation(location);
 
-      setSearch(data.location.name)
+      setSearch(location.city)
       setWeatherData({
         temperature: data?.current.temp_c,
         windSpeed: data?.current.wind_kph,
